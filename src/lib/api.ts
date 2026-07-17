@@ -45,6 +45,9 @@ export interface Transaksi {
   total_bayar: string | null;
   status: "aktif" | "selesai" | "dibayar";
   nama_pelanggan: string | null;
+  payment_method?: "cash" | "qris";
+  transaction_date?: string;
+  total_price?: string;
   created_at: string;
   user?: { name: string };
   meja?: Meja;
@@ -120,6 +123,25 @@ export const addItem = (transaksiId: number, data: { product_id: number; qty: nu
     method: "POST",
     body: JSON.stringify(data),
   });
+
+// Cafe POS
+export const cafePos = (payment_method: "cash" | "qris", items: Record<string, number>) =>
+  request<Transaksi>("/transaksis/cafe_pos", {
+    method: "POST",
+    body: JSON.stringify({ payment_method, items }),
+  });
+
+// Reports
+export interface ReportData {
+  today_revenue: number;
+  monthly_revenue: number;
+  best_sellers: { name: string; quantity: number }[];
+  today_transactions: number;
+  monthly_transactions: number;
+}
+
+export const getReports = () =>
+  request<ReportData>("/reports");
 
 // Report
 export const getReport = () => request("/transaksis/report");

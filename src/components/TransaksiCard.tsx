@@ -18,17 +18,29 @@ export default function TransaksiCard({ transaksi, onBayar }: Props) {
     0
   ) || 0;
 
+  const paymentBadge = (method?: string) => {
+    if (!method) return null;
+    return method === "cash"
+      ? "bg-green-900/30 text-green-400"
+      : "bg-blue-900/30 text-blue-400";
+  };
+
   return (
     <div className="bg-gray-800/40 border border-gray-700 rounded-xl p-4">
       <div className="flex items-center justify-between mb-2">
-        <div>
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-amber-400 font-mono text-sm">{transaksi.kode_transaksi}</span>
-          <span className={`ml-2 px-2 py-0.5 rounded text-xs ${statusColor[transaksi.status] || ""}`}>
+          <span className={`px-2 py-0.5 rounded text-xs ${statusColor[transaksi.status] || ""}`}>
             {transaksi.status}
           </span>
+          {transaksi.payment_method && (
+            <span className={`px-2 py-0.5 rounded text-xs uppercase font-semibold ${paymentBadge(transaksi.payment_method)}`}>
+              💳 {transaksi.payment_method}
+            </span>
+          )}
         </div>
         <span className="text-xs text-gray-400">
-          {new Date(transaksi.created_at).toLocaleString("id-ID")}
+          {new Date(transaksi.transaction_date || transaksi.created_at).toLocaleString("id-ID")}
         </span>
       </div>
       <div className="flex items-center gap-4 text-sm text-gray-300">

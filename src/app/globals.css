@@ -16,6 +16,76 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
 }
 
+/* ===== Billiard Theme Utility Classes ===== */
+
+.billiard-card {
+  @apply bg-[#111d15] border border-[#2d5a27] rounded-xl;
+}
+
+.billiard-input {
+  @apply w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/50 focus:border-[#c9a84c];
+}
+
+.billiard-btn {
+  @apply w-full py-3 bg-[#c9a84c] hover:bg-[#dbb95c] text-black font-semibold rounded-xl transition-colors;
+}
+
+.billiard-stat {
+  @apply bg-[#111d15] border border-[#2d5a27] rounded-xl p-5;
+}
+
+/* Cafe POS Product Card */
+.cafe-product-card {
+  @apply bg-[#111d15] border border-[#2d5a27] rounded-xl p-4 flex flex-col items-center text-center transition-all hover:border-[#c9a84c]/50 hover:shadow-lg hover:shadow-[#c9a84c]/5;
+}
+
+.cafe-product-card.low-stock {
+  @apply border-yellow-700/50;
+}
+
+/* Quantity Stepper */
+.qty-stepper {
+  @apply flex items-center gap-2;
+}
+
+.qty-stepper button {
+  @apply w-8 h-8 rounded-lg bg-gray-700 text-white text-lg font-bold hover:bg-gray-600 transition-colors flex items-center justify-center;
+}
+
+.qty-stepper input {
+  @apply w-12 text-center bg-gray-800 border border-gray-700 rounded-lg text-sm text-white py-1;
+}
+
+/* Stock badge */
+.stock-badge {
+  @apply text-xs px-2 py-0.5 rounded-full;
+}
+
+.stock-badge.ok {
+  @apply bg-green-900/30 text-green-400;
+}
+
+.stock-badge.low {
+  @apply bg-yellow-900/30 text-yellow-400;
+}
+
+.stock-badge.out {
+  @apply bg-red-900/30 text-red-400;
+}
+
+/* Tab */
+.billiard-tab {
+  @apply px-6 py-3 text-sm font-semibold rounded-t-xl transition-colors cursor-pointer;
+}
+
+.billiard-tab.active {
+  @apply bg-[#111d15] text-[#c9a84c] border border-[#2d5a27] border-b-0;
+}
+
+.billiard-tab.inactive {
+  @apply bg-gray-900/50 text-gray-400 border border-transparent hover:text-gray-200;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #0a0f0d; }
