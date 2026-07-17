@@ -20,10 +20,6 @@ export default function ReportsPage() {
     if (!authLoading && user?.role !== "admin") router.push("/dashboard");
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    if (user) loadData();
-  }, [user]);
-
   const loadData = async () => {
     try {
       const [r, t] = await Promise.all([
@@ -32,9 +28,14 @@ export default function ReportsPage() {
       ]);
       setReport(r);
       setTransaksis(t);
-    } catch (e) { console.error(e); }
+    } catch (e: unknown) { console.error(e); }
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (user) loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   // Filter transaksis by date range + only dibayar
   const filteredTrans = transaksis

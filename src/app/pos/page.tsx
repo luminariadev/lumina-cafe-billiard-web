@@ -35,15 +35,7 @@ export default function POSPage() {
   const [cafeQuantities, setCafeQuantities] = useState<Map<number, number>>(new Map());
   const [cafeSubmitting, setCafeSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (!authLoading && !user) router.push("/login");
-  }, [user, authLoading, router]);
-
-  useEffect(() => {
-    if (!user) return;
-    refreshData();
-  }, [user]);
-
+  // Data fetch — defined before useEffect to satisfy lint order rule
   const refreshData = async () => {
     try {
       const [m, p, t] = await Promise.all([
@@ -52,11 +44,21 @@ export default function POSPage() {
       setMeja(m);
       setProducts(p);
       setTransaksis(t);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (!authLoading && !user) router.push("/login");
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (!user) return;
+    refreshData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   // ========== Billiard handlers ==========
 
@@ -109,8 +111,8 @@ export default function POSPage() {
       setActiveTransaksi(t);
       setCart(new Map());
       refreshData();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -127,8 +129,8 @@ export default function POSPage() {
       }
       setCart(new Map());
       refreshData();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -143,8 +145,8 @@ export default function POSPage() {
       setSelectedMeja(null);
       setCart(new Map());
       refreshData();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -169,7 +171,6 @@ export default function POSPage() {
     setError("");
     setSuccess("");
 
-    // Validate at least 1 item selected
     const items: Record<string, number> = {};
     let hasItems = false;
     for (const [productId, qty] of cafeQuantities) {
@@ -189,10 +190,9 @@ export default function POSPage() {
       const result = await cafePos(cafePaymentMethod, items);
       setSuccess("Transaksi cafe berhasil! 🧾");
       setCafeQuantities(new Map());
-      // Redirect to receipt page
       router.push(`/receipt/${result.id}`);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err));
     }
     setCafeSubmitting(false);
   };
@@ -208,11 +208,12 @@ export default function POSPage() {
     return <div className="text-center py-20 text-6xl animate-pulse">🎱</div>;
   }
 
+  // ========== Render ==========
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-white">POS / Kasir</h1>
 
-      {/* Success Notification */}
       {success && (
         <div className="bg-green-900/30 border border-green-700 text-green-300 px-4 py-2 rounded-lg text-sm flex items-center justify-between">
           <span>✅ {success}</span>
@@ -220,7 +221,6 @@ export default function POSPage() {
         </div>
       )}
 
-      {/* Error Notification */}
       {error && (
         <div className="bg-red-900/30 border border-red-700 text-red-300 px-4 py-2 rounded-lg text-sm flex items-center justify-between">
           <span>⚠️ {error}</span>
@@ -247,7 +247,6 @@ export default function POSPage() {
       {/* ==================== BILLIARD TAB ==================== */}
       {tab === "billiard" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left: Meja Selection */}
           <div className="lg:col-span-2 space-y-4">
             <div className="bg-[#111d15] border border-[#2d5a27] rounded-xl p-4">
               <h2 className="text-lg font-semibold text-white mb-3">Pilih Meja</h2>
@@ -306,7 +305,6 @@ export default function POSPage() {
             )}
           </div>
 
-          {/* Right: Cart & Payment */}
           <div className="space-y-4">
             <div className="bg-[#111d15] border border-[#2d5a27] rounded-xl p-4 sticky top-24">
               <h2 className="text-lg font-semibold text-white mb-3">
@@ -375,7 +373,6 @@ export default function POSPage() {
       {/* ==================== CAFE TAB ==================== */}
       {tab === "cafe" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left: Product Grid */}
           <div className="lg:col-span-2 space-y-4">
             <div className="billiard-card p-4">
               <h2 className="text-lg font-semibold text-white mb-3">Pilih Produk Cafe</h2>
@@ -388,14 +385,10 @@ export default function POSPage() {
             </div>
           </div>
 
-          {/* Right: Checkout Sidebar */}
           <div className="space-y-4">
             <div className="billiard-card p-4 sticky top-24">
-              <h2 className="text-lg font-semibold text-white mb-4">
-                ☕ Checkout Cafe
-              </h2>
+              <h2 className="text-lg font-semibold text-white mb-4">☕ Checkout Cafe</h2>
 
-              {/* Payment Method */}
               <div className="mb-4">
                 <p className="text-sm text-gray-400 mb-2">Metode Pembayaran</p>
                 <div className="flex gap-2">
@@ -422,7 +415,6 @@ export default function POSPage() {
                 </div>
               </div>
 
-              {/* Selected Items */}
               <div className="space-y-2 max-h-[300px] overflow-y-auto mb-4">
                 {Array.from(cafeQuantities.entries()).map(([productId, qty]) => {
                   if (qty <= 0) return null;
@@ -456,7 +448,6 @@ export default function POSPage() {
                 )}
               </div>
 
-              {/* Total & Checkout */}
               <div className="border-t border-gray-700 pt-3 space-y-3">
                 <div className="flex justify-between text-sm text-gray-400">
                   <span>Jumlah Item</span>

@@ -14,15 +14,6 @@ export default function ReceiptPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!authLoading && !user) router.push("/login");
-  }, [user, authLoading, router]);
-
-  useEffect(() => {
-    if (!user || !id) return;
-    loadData();
-  }, [user, id]);
-
   const loadData = async () => {
     try {
       const all = await getTransaksis();
@@ -32,11 +23,21 @@ export default function ReceiptPage() {
       } else {
         setError("Transaksi tidak ditemukan");
       }
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : String(e));
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (!authLoading && !user) router.push("/login");
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (!user || !id) return;
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, id]);
 
   const handlePrint = () => {
     window.print();
