@@ -1,474 +1,309 @@
 'use client';
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
-import {
-  getMejas, getProducts, createTransaksi, addItem,
-  bayarTransaksi, getTransaksis, cafePos,
-  Meja, Product, Transaksi,
-} from "@/lib/api";
-import MejaGrid from "@/components/MejaGrid";
-import ProductList from "@/components/ProductList";
 
-type TabMode = "billiard" | "cafe";
+import { useState, useEffect } from 'react';
+import { getProducts, getMejas, Product, Meja, cafePos } from '@/lib/api';
 
-export default function POSPage() {
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
+interface CartItem {
+  productId: number;
+  name: string;
+  price: number;
+  qty: number;
+}
 
-  const [tab, setTab] = useState<TabMode>("billiard");
-
-  // Billiard state
-  const [meja, setMeja] = useState<Meja[]>([]);
+export default function PosPage() {
+  const [tab, setTab] = useState<'billiard' | 'cafe'>('cafe');
   const [products, setProducts] = useState<Product[]>([]);
-  const [transaksis, setTransaksis] = useState<Transaksi[]>([]);
-  const [selectedMeja, setSelectedMeja] = useState<Meja | null>(null);
+  const [mejas, setMejas] = useState<Meja[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'qris'>('cash');
+  const [processing, setProcessing] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [pelanggan, setPelanggan] = useState("");
-  const [cart, setCart] = useState<Map<number, { product: Product; qty: number }>>(new Map());
-  const [activeTransaksi, setActiveTransaksi] = useState<Transaksi | null>(null);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-
-  // Cafe state
-  const [cafePaymentMethod, setCafePaymentMethod] = useState<"cash" | "qris">("cash");
-  const [cafeQuantities, setCafeQuantities] = useState<Map<number, number>>(new Map());
-  const [cafeSubmitting, setCafeSubmitting] = useState(false);
-
-  // Data fetch — defined before useEffect to satisfy lint order rule
-  const refreshData = async () => {
-    try {
-      const [m, p, t] = await Promise.all([
-        getMejas(), getProducts(), getTransaksis(),
-      ]);
-      setMeja(m);
-      setProducts(p);
-      setTransaksis(t);
-    } catch (e: unknown) {
-      console.error(e);
-    }
-    setLoading(false);
-  };
 
   useEffect(() => {
-    if (!authLoading && !user) router.push("/login");
-  }, [user, authLoading, router]);
+    Promise.all([getProducts(), getMejas()])
+      .then(([p, m]) => {
+        setProducts(p || []);
+        setMejas(m || []);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
 
-  useEffect(() => {
-    if (!user) return;
-    refreshData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  // ========== Billiard handlers ==========
-
-  const handleSelectMeja = (m: Meja) => {
-    setSelectedMeja(m);
-    const existing = transaksis.find(
-      (t) => t.meja_id === m.id && t.status === "aktif"
-    );
-    if (existing) {
-      setActiveTransaksi(existing);
-    } else {
-      setActiveTransaksi(null);
-      setCart(new Map());
-    }
-    setError("");
-    setSuccess("");
-  };
-
-  const handleAddProduct = (product: Product) => {
-    const newCart = new Map(cart);
-    if (newCart.has(product.id)) {
-      newCart.set(product.id, { product, qty: newCart.get(product.id)!.qty + 1 });
-    } else {
-      newCart.set(product.id, { product, qty: 1 });
-    }
-    setCart(newCart);
-  };
-
-  const updateQty = (productId: number, qty: number) => {
-    const newCart = new Map(cart);
-    if (qty <= 0) {
-      newCart.delete(productId);
-    } else {
-      const existing = newCart.get(productId);
-      if (existing) newCart.set(productId, { ...existing, qty });
-    }
-    setCart(newCart);
-  };
-
-  const handleStartTransaksi = async () => {
-    if (!selectedMeja) return;
-    setError("");
-    setSuccess("");
-    try {
-      const t = await createTransaksi({
-        meja_id: selectedMeja.id,
-        tipe: "billiard",
-        nama_pelanggan: pelanggan || undefined,
-      });
-      setActiveTransaksi(t);
-      setCart(new Map());
-      refreshData();
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : String(err));
-    }
-  };
-
-  const handleAddItems = async () => {
-    if (!activeTransaksi || cart.size === 0) return;
-    setError("");
-    setSuccess("");
-    try {
-      for (const [, item] of cart) {
-        await addItem(activeTransaksi.id, {
-          product_id: item.product.id,
-          qty: item.qty,
-        });
+  const addToCart = (product: Product) => {
+    setCart(prev => {
+      const existing = prev.find(i => i.productId === product.id);
+      if (existing) {
+        return prev.map(i => i.productId === product.id ? { ...i, qty: i.qty + 1 } : i);
       }
-      setCart(new Map());
-      refreshData();
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : String(err));
-    }
+      return [...prev, { productId: product.id, name: product.name, price: parseFloat(product.price), qty: 1 }];
+    });
   };
 
-  const handleBayar = async () => {
-    if (!activeTransaksi) return;
-    setError("");
-    setSuccess("");
+  const updateQty = (productId: number, delta: number) => {
+    setCart(prev => {
+      const item = prev.find(i => i.productId === productId);
+      if (!item) return prev;
+      const newQty = item.qty + delta;
+      if (newQty <= 0) return prev.filter(i => i.productId !== productId);
+      return prev.map(i => i.productId === productId ? { ...i, qty: newQty } : i);
+    });
+  };
+
+  const removeFromCart = (productId: number) => {
+    setCart(prev => prev.filter(i => i.productId !== productId));
+  };
+
+  const clearCart = () => setCart([]);
+
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const tax = subtotal * 0.12;
+  const total = subtotal + tax;
+
+  const handleCheckout = async () => {
+    if (cart.length === 0) return;
+    setProcessing(true);
+    setMessage(null);
     try {
-      await bayarTransaksi(activeTransaksi.id);
-      setSuccess(`Transaksi ${activeTransaksi.kode_transaksi} berhasil dibayar!`);
-      setActiveTransaksi(null);
-      setSelectedMeja(null);
-      setCart(new Map());
-      refreshData();
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : String(err));
+      const items: Record<string, number> = {};
+      cart.forEach(item => { items[item.productId] = item.qty; });
+      const result = await cafePos(paymentMethod, items);
+      setMessage(`✅ Transaksi berhasil! Kode: ${result.kode_transaksi}`);
+      clearCart();
+    } catch (err: any) {
+      setMessage(`❌ Gagal: ${err.message}`);
+    } finally {
+      setProcessing(false);
     }
   };
 
-  const totalCart = Array.from(cart.values()).reduce(
-    (sum, item) => sum + parseInt(item.product.price) * item.qty,
-    0
-  );
-
-  // ========== Cafe handlers ==========
-
-  const handleCafeQtyChange = (productId: number, qty: number) => {
-    const newQ = new Map(cafeQuantities);
-    if (qty <= 0) {
-      newQ.delete(productId);
-    } else {
-      newQ.set(productId, qty);
-    }
-    setCafeQuantities(newQ);
-  };
-
-  const handleCafeCheckout = async () => {
-    setError("");
-    setSuccess("");
-
-    const items: Record<string, number> = {};
-    let hasItems = false;
-    for (const [productId, qty] of cafeQuantities) {
-      if (qty > 0) {
-        items[String(productId)] = qty;
-        hasItems = true;
-      }
-    }
-
-    if (!hasItems) {
-      setError("Pilih minimal 1 produk");
-      return;
-    }
-
-    setCafeSubmitting(true);
-    try {
-      const result = await cafePos(cafePaymentMethod, items);
-      setSuccess("Transaksi cafe berhasil! 🧾");
-      setCafeQuantities(new Map());
-      router.push(`/receipt/${result.id}`);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : String(err));
-    }
-    setCafeSubmitting(false);
-  };
-
-  const cafeSubtotal = Array.from(cafeQuantities.entries()).reduce((sum, [id, qty]) => {
-    const product = products.find((p) => p.id === id);
-    return sum + (product ? parseInt(product.price) * qty : 0);
-  }, 0);
-
-  const cafeTotalItems = Array.from(cafeQuantities.values()).reduce((sum, q) => sum + q, 0);
-
-  if (authLoading || loading) {
-    return <div className="text-center py-20 text-6xl animate-pulse">🎱</div>;
-  }
-
-  // ========== Render ==========
+  if (loading) return <div className="flex justify-center"><span className="material-symbols-outlined text-primary text-6xl animate-pulse">sports_bar</span></div>;
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-white">POS / Kasir</h1>
-
-      {success && (
-        <div className="bg-green-900/30 border border-green-700 text-green-300 px-4 py-2 rounded-lg text-sm flex items-center justify-between">
-          <span>✅ {success}</span>
-          <button onClick={() => setSuccess("")} className="text-green-400 hover:text-green-200 ml-2">✕</button>
-        </div>
-      )}
-
-      {error && (
-        <div className="bg-red-900/30 border border-red-700 text-red-300 px-4 py-2 rounded-lg text-sm flex items-center justify-between">
-          <span>⚠️ {error}</span>
-          <button onClick={() => setError("")} className="text-red-400 hover:text-red-200 ml-2">✕</button>
-        </div>
-      )}
-
-      {/* Tab switcher */}
-      <div className="flex gap-1">
+    <>
+      {/* Tabs */}
+      <div className="flex gap-sm mb-lg">
         <button
-          onClick={() => { setTab("billiard"); setError(""); setSuccess(""); }}
-          className={`billiard-tab ${tab === "billiard" ? "active" : "inactive"}`}
+          onClick={() => setTab('billiard')}
+          className={`flex items-center gap-2 px-lg py-md rounded-xl font-label-md transition-all ${
+            tab === 'billiard' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant hover:text-primary'
+          }`}
         >
-          🎱 Billiard
+          <span className="material-symbols-outlined text-sm">sports_bar</span> Billiards
         </button>
         <button
-          onClick={() => { setTab("cafe"); setError(""); setSuccess(""); }}
-          className={`billiard-tab ${tab === "cafe" ? "active" : "inactive"}`}
+          onClick={() => setTab('cafe')}
+          className={`flex items-center gap-2 px-lg py-md rounded-xl font-label-md transition-all ${
+            tab === 'cafe' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant hover:text-primary'
+          }`}
         >
-          ☕ Cafe
+          <span className="material-symbols-outlined text-sm">local_cafe</span> Cafe
         </button>
       </div>
 
-      {/* ==================== BILLIARD TAB ==================== */}
-      {tab === "billiard" && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
-            <div className="bg-[#111d15] border border-[#2d5a27] rounded-xl p-4">
-              <h2 className="text-lg font-semibold text-white mb-3">Pilih Meja</h2>
-              <MejaGrid meja={meja} onSelect={handleSelectMeja} selectedId={selectedMeja?.id} />
-            </div>
+      {tab === 'billiard' ? (
+        <BilliardView mejas={mejas} />
+      ) : (
+        <CafeView
+          products={products}
+          cart={cart}
+          addToCart={addToCart}
+          updateQty={updateQty}
+          removeFromCart={removeFromCart}
+          clearCart={clearCart}
+          subtotal={subtotal}
+          tax={tax}
+          total={total}
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+          handleCheckout={handleCheckout}
+          processing={processing}
+          message={message}
+        />
+      )}
+    </>
+  );
+}
 
-            {selectedMeja && (
-              <div className="bg-[#111d15] border border-[#2d5a27] rounded-xl p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-lg font-semibold text-white">
-                    Meja {selectedMeja.nomor_meja} — {selectedMeja.keterangan}
-                  </h2>
-                  <span className="text-sm text-gray-400">{selectedMeja.status}</span>
+function BilliardView({ mejas }: { mejas: Meja[] }) {
+  const activeMejas = mejas.filter(m => m.status === 'dipakai');
+  const availableMejas = mejas.filter(m => m.status === 'tersedia');
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
+      <div className="glass-card rounded-xl p-lg">
+        <h4 className="font-headline-md text-on-surface mb-md">Active Sessions</h4>
+        {activeMejas.length === 0 ? (
+          <p className="text-on-surface-variant font-label-md text-center py-xl">No active sessions</p>
+        ) : (
+          <div className="space-y-md">
+            {activeMejas.map(m => (
+              <div key={m.id} className="flex items-center justify-between p-md rounded-lg bg-surface-container-low border border-primary/20 active-glow">
+                <div>
+                  <p className="font-label-md text-primary">Table {String(m.nomor_meja).padStart(2, '0')}</p>
+                  <p className="font-label-sm text-on-surface-variant">{m.keterangan || 'In use'}</p>
                 </div>
-
-                {activeTransaksi ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="text"
-                        placeholder="Nama Pelanggan"
-                        value={pelanggan}
-                        onChange={(e) => setPelanggan(e.target.value)}
-                        className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white"
-                      />
-                    </div>
-                    <p className="text-sm text-amber-400 font-mono">
-                      Transaksi: {activeTransaksi.kode_transaksi}
-                    </p>
-                    <ProductList
-                      products={products}
-                      onAdd={handleAddProduct}
-                      selected={new Map(
-                        Array.from(cart.entries()).map(([id, item]) => [id, item.qty])
-                      )}
-                    />
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <input
-                      type="text"
-                      placeholder="Nama Pelanggan (opsional)"
-                      value={pelanggan}
-                      onChange={(e) => setPelanggan(e.target.value)}
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500"
-                    />
-                    <button
-                      onClick={handleStartTransaksi}
-                      className="w-full py-3 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl transition-colors"
-                    >
-                      Mulai Transaksi
-                    </button>
-                  </div>
-                )}
+                <span className="material-symbols-outlined text-primary">timer</span>
               </div>
-            )}
+            ))}
           </div>
-
-          <div className="space-y-4">
-            <div className="bg-[#111d15] border border-[#2d5a27] rounded-xl p-4 sticky top-24">
-              <h2 className="text-lg font-semibold text-white mb-3">
-                🛒 Keranjang
-                {cart.size > 0 && (
-                  <span className="ml-2 text-sm text-gray-400">{cart.size} item</span>
-                )}
-              </h2>
-
-              <div className="space-y-2 max-h-[300px] overflow-y-auto mb-4">
-                {Array.from(cart.values()).map((item) => (
-                  <div key={item.product.id} className="flex items-center justify-between bg-gray-800/50 rounded-lg px-3 py-2">
-                    <div className="flex-1">
-                      <p className="text-sm text-white">{item.product.name}</p>
-                      <p className="text-xs text-gray-400">
-                        Rp {parseInt(item.product.price).toLocaleString()} × {item.qty}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => updateQty(item.product.id, item.qty - 1)}
-                        className="w-6 h-6 rounded bg-gray-700 text-white text-xs hover:bg-gray-600"
-                      >-</button>
-                      <span className="text-sm text-white w-6 text-center">{item.qty}</span>
-                      <button
-                        onClick={() => updateQty(item.product.id, item.qty + 1)}
-                        className="w-6 h-6 rounded bg-gray-700 text-white text-xs hover:bg-gray-600"
-                      >+</button>
-                    </div>
-                  </div>
-                ))}
-                {cart.size === 0 && (
-                  <p className="text-gray-500 text-sm text-center py-4">Keranjang kosong</p>
-                )}
-              </div>
-
-              <div className="border-t border-gray-700 pt-3 space-y-2">
-                <div className="flex justify-between text-white font-bold text-lg">
-                  <span>Total</span>
-                  <span className="text-amber-400">Rp {totalCart.toLocaleString()}</span>
-                </div>
-
-                {activeTransaksi && (
-                  <>
-                    <button
-                      onClick={handleAddItems}
-                      disabled={cart.size === 0}
-                      className="w-full py-2.5 bg-green-700 hover:bg-green-600 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-xl transition-colors text-sm font-semibold"
-                    >
-                      Tambahkan ke Transaksi
-                    </button>
-                    <button
-                      onClick={handleBayar}
-                      className="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl transition-colors font-semibold"
-                    >
-                      Bayar & Selesai
-                    </button>
-                  </>
-                )}
-              </div>
+        )}
+      </div>
+      <div className="glass-card rounded-xl p-lg">
+        <h4 className="font-headline-md text-on-surface mb-md">Available Tables</h4>
+        <div className="grid grid-cols-2 gap-md">
+          {availableMejas.map(m => (
+            <div key={m.id} className="p-md rounded-lg bg-surface-container-low border border-outline-variant/10 text-center hover:border-primary/40 transition-all cursor-pointer">
+              <p className="font-label-md text-primary">Table {String(m.nomor_meja).padStart(2, '0')}</p>
+              <p className="font-label-sm text-on-surface-variant capitalize">{m.status}</p>
             </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CafeView({
+  products, cart, addToCart, updateQty, removeFromCart, clearCart,
+  subtotal, tax, total, paymentMethod, setPaymentMethod, handleCheckout,
+  processing, message
+}: {
+  products: Product[]; cart: CartItem[]; addToCart: (p: Product) => void;
+  updateQty: (id: number, d: number) => void; removeFromCart: (id: number) => void;
+  clearCart: () => void; subtotal: number; tax: number; total: number;
+  paymentMethod: string; setPaymentMethod: (m: 'cash' | 'qris') => void;
+  handleCheckout: () => Promise<void>; processing: boolean; message: string | null;
+}) {
+  return (
+    <div className="flex flex-col lg:flex-row gap-lg">
+      {/* Product Grid */}
+      <div className="flex-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md">
+          {products.map(product => (
+            <button
+              key={product.id}
+              onClick={() => addToCart(product)}
+              className="group flex flex-col bg-surface-container rounded-2xl overflow-hidden border border-outline-variant/10 hover:border-primary/40 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-left"
+            >
+              <div className="aspect-[16/10] bg-surface-container-highest overflow-hidden relative flex items-center justify-center">
+                <span className="material-symbols-outlined text-4xl text-on-surface-variant/30 group-hover:scale-110 transition-transform">
+                  {product.product_type === 'makanan' ? 'restaurant' : 'local_cafe'}
+                </span>
+                <div className="absolute top-3 right-3 px-3 py-1 bg-surface/90 backdrop-blur-md rounded-full text-primary font-bold text-label-md">
+                  Rp {parseInt(product.price).toLocaleString('id-ID')}
+                </div>
+                {product.stock <= 5 && (
+                  <div className="absolute top-3 left-3 px-2 py-0.5 bg-error/90 text-on-error text-[10px] font-bold rounded-full">
+                    {product.stock} left
+                  </div>
+                )}
+              </div>
+              <div className="p-lg">
+                <h3 className="font-headline-md text-on-surface mb-xs">{product.name}</h3>
+                <p className="text-on-surface-variant text-label-sm mb-lg line-clamp-1">{product.product_type || 'Product'}</p>
+                <div className="flex items-center justify-between text-primary">
+                  <span className="font-label-md">Add to Order</span>
+                  <span className="material-symbols-outlined">add_circle</span>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Cart Sidebar */}
+      <aside className="w-full lg:w-[400px] flex flex-col bg-surface-container-low rounded-2xl p-lg border border-outline-variant/10 shadow-2xl h-fit lg:sticky lg:top-24">
+        <div className="flex justify-between items-center mb-lg">
+          <h2 className="font-headline-lg text-headline-lg text-on-surface">Current Order</h2>
+          <button onClick={clearCart} className="text-on-surface-variant hover:text-error transition-colors font-label-md uppercase tracking-wider">Clear</button>
+        </div>
+
+        {/* Payment Method */}
+        <div className="bg-surface-container-lowest rounded-xl p-md border border-outline-variant/10 mb-lg">
+          <p className="font-label-sm text-on-surface-variant uppercase tracking-widest mb-sm">Payment Method</p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPaymentMethod('cash')}
+              className={`flex-1 py-2 border rounded-lg font-bold text-sm transition-all ${paymentMethod === 'cash' ? 'border-primary bg-primary/10 text-primary' : 'border-outline-variant/20 bg-surface text-on-surface-variant hover:border-primary/40'}`}
+            >
+              Cash
+            </button>
+            <button
+              onClick={() => setPaymentMethod('qris')}
+              className={`flex-1 py-2 border rounded-lg font-bold text-sm transition-all ${paymentMethod === 'qris' ? 'border-primary bg-primary/10 text-primary' : 'border-outline-variant/20 bg-surface text-on-surface-variant hover:border-primary/40'}`}
+            >
+              QRIS
+            </button>
           </div>
         </div>
-      )}
 
-      {/* ==================== CAFE TAB ==================== */}
-      {tab === "cafe" && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
-            <div className="billiard-card p-4">
-              <h2 className="text-lg font-semibold text-white mb-3">Pilih Produk Cafe</h2>
-              <ProductList
-                products={products.filter((p) => p.product_type !== "billiard")}
-                cafeMode
-                quantities={cafeQuantities}
-                onQtyChange={handleCafeQtyChange}
-              />
+        {/* Cart Items */}
+        <div className="flex-1 overflow-y-auto space-y-md mb-lg max-h-80 custom-scrollbar" id="cart-container">
+          {cart.length === 0 ? (
+            <div className="flex flex-col items-center justify-center text-on-surface-variant/40 py-xl">
+              <span className="material-symbols-outlined text-6xl mb-md">shopping_cart_checkout</span>
+              <p className="font-body-md">Order is empty</p>
+              <p className="text-label-sm">Select items to add</p>
             </div>
+          ) : (
+            cart.map(item => (
+              <div key={item.productId} className="flex items-center justify-between p-md bg-surface rounded-xl border border-outline-variant/10 group hover:border-primary/20 transition-colors">
+                <div className="flex-1 min-w-0 mr-4">
+                  <h4 className="font-label-md text-on-surface truncate">{item.name}</h4>
+                  <p className="text-primary font-bold">Rp {(item.price * item.qty).toLocaleString('id-ID')}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center bg-surface-container-high rounded-lg p-1 border border-outline-variant/20">
+                    <button onClick={() => updateQty(item.productId, -1)} className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">-</button>
+                    <span className="w-6 text-center font-bold text-on-surface">{item.qty}</span>
+                    <button onClick={() => updateQty(item.productId, 1)} className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">+</button>
+                  </div>
+                  <button onClick={() => removeFromCart(item.productId)} className="material-symbols-outlined text-on-error/40 hover:text-error transition-colors">delete</button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Summary */}
+        <div className="space-y-md pt-lg border-t border-outline-variant/10">
+          <div className="flex justify-between font-label-md text-on-surface-variant">
+            <span>Subtotal</span>
+            <span className="font-bold" id="subtotal">Rp {subtotal.toLocaleString('id-ID')}</span>
           </div>
-
-          <div className="space-y-4">
-            <div className="billiard-card p-4 sticky top-24">
-              <h2 className="text-lg font-semibold text-white mb-4">☕ Checkout Cafe</h2>
-
-              <div className="mb-4">
-                <p className="text-sm text-gray-400 mb-2">Metode Pembayaran</p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setCafePaymentMethod("cash")}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                      cafePaymentMethod === "cash"
-                        ? "bg-green-700 text-white border border-green-500"
-                        : "bg-gray-800 text-gray-400 border border-gray-700 hover:border-gray-500"
-                    }`}
-                  >
-                    💵 Cash
-                  </button>
-                  <button
-                    onClick={() => setCafePaymentMethod("qris")}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                      cafePaymentMethod === "qris"
-                        ? "bg-blue-700 text-white border border-blue-500"
-                        : "bg-gray-800 text-gray-400 border border-gray-700 hover:border-gray-500"
-                    }`}
-                  >
-                    📱 QRIS
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-2 max-h-[300px] overflow-y-auto mb-4">
-                {Array.from(cafeQuantities.entries()).map(([productId, qty]) => {
-                  if (qty <= 0) return null;
-                  const product = products.find((p) => p.id === productId);
-                  if (!product) return null;
-                  return (
-                    <div key={productId} className="flex items-center justify-between bg-gray-800/50 rounded-lg px-3 py-2">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-white truncate">{product.name}</p>
-                        <p className="text-xs text-gray-400">
-                          Rp {parseInt(product.price).toLocaleString()} × {qty}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 ml-2">
-                        <button
-                          onClick={() => handleCafeQtyChange(productId, qty - 1)}
-                          className="w-6 h-6 rounded bg-gray-700 text-white text-xs hover:bg-gray-600"
-                        >-</button>
-                        <span className="text-sm text-white w-6 text-center">{qty}</span>
-                        <button
-                          onClick={() => handleCafeQtyChange(productId, Math.min(qty + 1, product.stock))}
-                          className="w-6 h-6 rounded bg-gray-700 text-white text-xs hover:bg-gray-600"
-                          disabled={qty >= product.stock}
-                        >+</button>
-                      </div>
-                    </div>
-                  );
-                })}
-                {cafeTotalItems === 0 && (
-                  <p className="text-gray-500 text-sm text-center py-4">Belum ada produk dipilih</p>
-                )}
-              </div>
-
-              <div className="border-t border-gray-700 pt-3 space-y-3">
-                <div className="flex justify-between text-sm text-gray-400">
-                  <span>Jumlah Item</span>
-                  <span className="text-white">{cafeTotalItems}</span>
-                </div>
-                <div className="flex justify-between text-white font-bold text-lg">
-                  <span>Total</span>
-                  <span className="text-amber-400">Rp {cafeSubtotal.toLocaleString()}</span>
-                </div>
-                <button
-                  onClick={handleCafeCheckout}
-                  disabled={cafeTotalItems === 0 || cafeSubmitting}
-                  className="w-full py-3 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-700 disabled:text-gray-500 text-white font-semibold rounded-xl transition-colors"
-                >
-                  {cafeSubmitting ? "Memproses..." : "🧾 Bayar"}
-                </button>
-              </div>
-            </div>
+          <div className="flex justify-between font-label-md text-on-surface-variant">
+            <span>PPN (12%)</span>
+            <span className="font-bold">Rp {tax.toLocaleString('id-ID')}</span>
+          </div>
+          <div className="flex justify-between items-end mt-2">
+            <span className="font-headline-lg text-headline-lg">Total</span>
+            <span className="font-headline-lg text-headline-lg text-primary">Rp {total.toLocaleString('id-ID')}</span>
           </div>
         </div>
-      )}
+
+        {message && (
+          <div className={`mt-3 px-4 py-3 rounded-xl font-label-md ${
+            message.includes('✅') ? 'bg-primary/10 text-primary' : 'bg-error/10 text-error'
+          }`}>
+            {message}
+          </div>
+        )}
+
+        <button
+          onClick={handleCheckout}
+          disabled={cart.length === 0 || processing}
+          className="mt-lg w-full py-4 bg-primary text-on-primary font-bold rounded-xl active:scale-95 transition-all shadow-[0_0_20px_rgba(107,251,154,0.15)] hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {processing ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="material-symbols-outlined animate-spin">sync</span> Processing...
+            </span>
+          ) : (
+            `Process Payment - Rp ${total.toLocaleString('id-ID')}`
+          )}
+        </button>
+      </aside>
     </div>
   );
 }

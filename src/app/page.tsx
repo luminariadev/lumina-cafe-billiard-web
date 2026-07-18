@@ -1,24 +1,26 @@
 'use client';
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+
+import { useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const router = useRouter();
   const { user, loading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!loading) {
-      router.replace(user ? "/dashboard" : "/login");
+      if (user) {
+        router.push('/dashboard');
+      } else {
+        router.push('/login');
+      }
     }
   }, [user, loading, router]);
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="text-center">
-        <div className="text-6xl mb-4 animate-pulse">🎱</div>
-        <p className="text-gray-400">Loading...</p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <span className="material-symbols-outlined text-primary text-6xl animate-pulse">sports_bar</span>
     </div>
   );
 }

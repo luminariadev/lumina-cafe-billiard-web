@@ -1,197 +1,87 @@
 'use client';
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
-import { getTransaksis, Transaksi } from "@/lib/api";
+
+import { useState, useEffect } from 'react';
+import { getTransaksis, Transaksi } from '@/lib/api';
+import { useParams } from 'next/navigation';
 
 export default function ReceiptPage() {
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
   const params = useParams();
-  const id = params.id as string;
-
-  const [transaksi, setTransaksi] = useState<Transaksi | null>(null);
+  const [tx, setTx] = useState<Transaksi | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const loadData = async () => {
-    try {
-      const all = await getTransaksis();
-      const found = all.find((t) => t.id === parseInt(id));
-      if (found) {
-        setTransaksi(found);
-      } else {
-        setError("Transaksi tidak ditemukan");
-      }
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
-    setLoading(false);
-  };
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authLoading && !user) router.push("/login");
-  }, [user, authLoading, router]);
+    getTransaksis()
+      .then((data) => {
+        const found = (data || []).find(t => t.id === Number(params.id));
+        if (found) setTx(found);
+        else setError('Transaction not found');
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [params.id]);
 
-  useEffect(() => {
-    if (!user || !id) return;
-    loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, id]);
+  if (loading) return <div className="flex justify-center"><span className="material-symbols-outlined text-primary text-6xl animate-pulse">receipt_long</span></div>;
+  if (error) return <div className="text-center py-xl text-error font-label-md">{error}</div>;
+  if (!tx) return null;
 
-  const handlePrint = () => {
-    window.print();
-  };
-
-  if (authLoading || loading) {
-    return <div className="text-center py-20 text-6xl animate-pulse">🧾</div>;
-  }
-
-  if (error || !transaksi) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-red-400 mb-4">{error || "Transaksi tidak ditemukan"}</p>
-        <button
-          onClick={() => router.push("/pos")}
-          className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg"
-        >
-          Kembali ke POS
-        </button>
-      </div>
-    );
-  }
-
-  const items = transaksi.transaksi_items || [];
-  const subtotal = items.reduce((sum, item) => sum + parseInt(item.subtotal), 0);
-  const grandTotal = transaksi.total_bayar ? parseInt(transaksi.total_bayar) : subtotal;
+  const total = tx.total_bayar ? parseFloat(tx.total_bayar) : 0;
 
   return (
-    <div className="max-w-md mx-auto">
-      {/* Receipt Card */}
-      <div
-        id="receipt"
-        className="bg-white text-black rounded-xl p-6 shadow-2xl print:shadow-none print:rounded-none"
-      >
-        {/* Header */}
-        <div className="text-center border-b-2 border-dashed border-gray-300 pb-4 mb-4">
-          <h1 className="text-2xl font-bold tracking-wide">🧾 LUMINA CAFE</h1>
-          <p className="text-sm text-gray-600 mt-1">Billiard & Cafe</p>
-          {transaksi.payment_method && (
-            <span
-              className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                transaksi.payment_method === "cash"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-blue-100 text-blue-800"
-              }`}
-            >
-              {transaksi.payment_method === "cash" ? "💵 CASH" : "📱 QRIS"}
-            </span>
-          )}
+    <div className="max-w-md mx-auto" id="receipt-content">
+      <div className="glass-card rounded-xl p-lg text-center">
+        <div className="mb-4">
+          <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mx-auto mb-2">
+            <span className="material-symbols-outlined text-on-primary" style={{ fontVariationSettings: "'FILL' 1" }}>receipt_long</span>
+          </div>
+          <h2 className="font-headline-md text-primary">Cue & Brew</h2>
+          <p className="font-label-sm text-on-surface-variant">Payment Receipt</p>
         </div>
 
-        {/* Info */}
-        <div className="text-sm text-gray-700 space-y-1 mb-4">
+        <div className="border-t border-outline-variant/10 pt-lg space-y-md text-left">
           <div className="flex justify-between">
-            <span>No. Transaksi</span>
-            <span className="font-mono font-medium">{transaksi.kode_transaksi}</span>
+            <span className="text-on-surface-variant font-label-sm">Transaction Code</span>
+            <span className="font-label-md text-primary">{tx.kode_transaksi}</span>
           </div>
           <div className="flex justify-between">
-            <span>Tanggal</span>
-            <span>
-              {transaksi.transaction_date
-                ? new Date(transaksi.transaction_date).toLocaleDateString("id-ID", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                : new Date(transaksi.created_at).toLocaleDateString("id-ID", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-            </span>
+            <span className="text-on-surface-variant font-label-sm">Type</span>
+            <span className="font-label-md capitalize">{tx.tipe}</span>
           </div>
-          <div className="flex justify-between">
-            <span>Kasir</span>
-            <span>{transaksi.user?.name || "—"}</span>
-          </div>
-          {transaksi.nama_pelanggan && (
+          {tx.nama_pelanggan && (
             <div className="flex justify-between">
-              <span>Pelanggan</span>
-              <span>{transaksi.nama_pelanggan}</span>
+              <span className="text-on-surface-variant font-label-sm">Customer</span>
+              <span className="font-label-md">{tx.nama_pelanggan}</span>
+            </div>
+          )}
+          {tx.payment_method && (
+            <div className="flex justify-between">
+              <span className="text-on-surface-variant font-label-sm">Payment</span>
+              <span className={`font-label-md uppercase tracking-wider ${tx.payment_method === 'qris' ? 'text-secondary' : 'text-primary'}`}>
+                {tx.payment_method === 'qris' ? 'QRIS' : 'CASH'}
+              </span>
             </div>
           )}
         </div>
 
-        {/* Items */}
-        <div className="border-t-2 border-dashed border-gray-300 pt-4 mb-4">
-          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide grid grid-cols-12 gap-2 pb-2 border-b border-gray-200 mb-2">
-            <span className="col-span-5">Item</span>
-            <span className="col-span-2 text-center">Qty</span>
-            <span className="col-span-3 text-right">Harga</span>
-            <span className="col-span-2 text-right">Subtotal</span>
-          </div>
-          <div className="space-y-2">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="grid grid-cols-12 gap-2 text-sm"
-              >
-                <span className="col-span-5 truncate">{item.product?.name || `Produk #${item.product_id}`}</span>
-                <span className="col-span-2 text-center">{item.qty}</span>
-                <span className="col-span-3 text-right">
-                  Rp {parseInt(item.harga_satuan).toLocaleString()}
-                </span>
-                <span className="col-span-2 text-right font-medium">
-                  Rp {parseInt(item.subtotal).toLocaleString()}
-                </span>
-              </div>
-            ))}
+        <div className="border-t border-outline-variant/10 pt-lg mt-lg">
+          <div className="flex justify-between items-center">
+            <span className="font-headline-md">Total</span>
+            <span className="font-headline-lg text-primary">Rp {total.toLocaleString('id-ID')}</span>
           </div>
         </div>
 
-        {/* Total */}
-        <div className="border-t-2 border-dashed border-gray-300 pt-4 mb-6">
-          <div className="flex justify-between text-sm">
-            <span>Subtotal</span>
-            <span>Rp {subtotal.toLocaleString()}</span>
+        {tx.status === 'aktif' && (
+          <div className="mt-lg p-md bg-secondary/10 rounded-xl">
+            <p className="font-label-md text-secondary">Payment pending</p>
           </div>
-          {grandTotal !== subtotal && (
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>Total Bayar</span>
-              <span>Rp {grandTotal.toLocaleString()}</span>
-            </div>
-          )}
-          <div className="flex justify-between text-lg font-bold mt-2 pt-2 border-t border-gray-200">
-            <span>Total</span>
-            <span>Rp {grandTotal.toLocaleString()}</span>
-          </div>
-        </div>
+        )}
 
-        {/* Footer */}
-        <div className="text-center text-xs text-gray-500 border-t-2 border-dashed border-gray-300 pt-4">
-          <p>Terima kasih telah berbelanja di Lumina Cafe</p>
-          <p className="mt-1">~ Selamat menikmati ~</p>
-        </div>
-      </div>
-
-      {/* Print Button */}
-      <div className="mt-6 flex gap-3 print:hidden">
         <button
-          onClick={handlePrint}
-          className="flex-1 py-3 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl transition-colors"
+          onClick={() => window.print()}
+          className="mt-lg w-full py-4 bg-primary text-on-primary font-bold rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2"
         >
-          🖨️ Cetak Struk
-        </button>
-        <button
-          onClick={() => router.push("/pos")}
-          className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-colors"
-        >
-          Kembali ke POS
+          <span className="material-symbols-outlined">print</span>
+          Print Receipt
         </button>
       </div>
     </div>
