@@ -113,3 +113,87 @@ body {
   background: rgba(107, 251, 154, 0.05);
   border-right: 3px solid #6bfb9a;
 }
+
+/* ===== BILLIARD BALL ANIMATIONS ===== */
+
+/* Ball base styles */
+.ball {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: ballFloat linear infinite;
+}
+
+@keyframes ballFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(100vh) scale(0.5) rotate(0deg);
+  }
+  5% {
+    opacity: 0.85;
+    transform: translateY(90vh) scale(1) rotate(90deg);
+  }
+  95% {
+    opacity: 0.85;
+    transform: translateY(-10vh) scale(1) rotate(90deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-15vh) scale(0.8) rotate(180deg);
+  }
+}
+
+/* Ball highlight (shine) */
+.ball::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 30%;
+  height: 25%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.5) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+/* Stripe pattern for balls > 9 */
+.ball.stripe::after {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 5%;
+  right: 5%;
+  height: 40%;
+  background: inherit;
+  border-radius: 50%;
+  transform: none;
+}
+
+/* Ball sizes - varied */
+.ball-1  { width: 44px; height: 44px; left: 5%;  animation-duration: 14s; animation-delay: 0s;    background: radial-gradient(circle at 35% 35%, #fff, #d4d4d4 40%, #a0a0a0 80%); }
+.ball-2  { width: 36px; height: 36px; left: 15%; animation-duration: 18s; animation-delay: 2s;    background: radial-gradient(circle at 35% 35%, #6bfb9a, #3cb371 50%, #228b22 90%); }
+.ball-3  { width: 50px; height: 50px; left: 25%; animation-duration: 12s; animation-delay: 5s;    background: radial-gradient(circle at 35% 35%, #ff4444, #cc0000 50%, #8b0000 90%); }
+.ball-4  { width: 32px; height: 32px; left: 35%; animation-duration: 22s; animation-delay: 1s;    background: radial-gradient(circle at 35% 35%, #4b0082, #2e004f 60%, #1a0033 90%); }
+.ball-5  { width: 42px; height: 42px; left: 45%; animation-duration: 16s; animation-delay: 7s;    background: radial-gradient(circle at 35% 35%, #ff8c00, #cc6600 50%, #993300 90%); }
+.ball-6  { width: 38px; height: 38px; left: 55%; animation-duration: 19s; animation-delay: 3s;    background: radial-gradient(circle at 35% 35%, #1e90ff, #0066cc 50%, #003366 90%); }
+.ball-7  { width: 48px; height: 48px; left: 65%; animation-duration: 13s; animation-delay: 9s;    background: radial-gradient(circle at 35% 35%, #dc143c, #8b0000 50%, #4a0000 90%); }
+.ball-8  { width: 52px; height: 52px; left: 75%; animation-duration: 15s; animation-delay: 4s;    background: radial-gradient(circle at 35% 35%, #1a1a1a, #000 50%, #111 90%); border: 1px solid #333; }
+.ball-9  { width: 34px; height: 34px; left: 85%; animation-duration: 20s; animation-delay: 6s;    background: radial-gradient(circle at 35% 35%, #ffdead, #deb887 50%, #8b7355 90%); }
+.ball-10 { width: 40px; height: 40px; left: 8%;  animation-duration: 17s; animation-delay: 11s;   background: radial-gradient(circle at 35% 35%, #4169e1, #1e3a8a 50%, #0f1d4a 90%); }
+.ball-11 { width: 46px; height: 46px; left: 50%; animation-duration: 21s; animation-delay: 8s;    background: radial-gradient(circle at 35% 35%, #ff69b4, #c71585 50%, #8b0a3d 90%); }
+.ball-12 { width: 30px; height: 30px; left: 92%; animation-duration: 23s; animation-delay: 14s;   background: radial-gradient(circle at 35% 35%, #32cd32, #228b22 50%, #0d4a0d 90%); }
+
+/* Ball 8 special styling (solid black) */
+.ball-8 {
+  box-shadow:
+    inset -4px -4px 10px rgba(0,0,0,0.5),
+    inset 4px 4px 10px rgba(255,255,255,0.1),
+    0 4px 15px rgba(0,0,0,0.5);
+}
+
+/* Floating subtle table felt pattern overlay */
+.login-bg-felt {
+  background:
+    radial-gradient(circle at 30% 70%, rgba(107, 251, 154, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(107, 251, 154, 0.03) 0%, transparent 50%),
+    #131313;
+}
