@@ -19,7 +19,7 @@ export default function BottomNav() {
   if (!user) return null;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface-container-high/90 backdrop-blur-md border-t border-outline-variant/10 z-50 rounded-t-xl shadow-lg">
+    <nav className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-[#201f1f]-high/90 backdrop-blur-md border-t border-[#869486]-variant/10 z-50 rounded-t-xl shadow-lg">
       {NAV_ITEMS.map(({ href, icon, label }) => {
         const isActive = pathname === href;
         return (
@@ -29,7 +29,7 @@ export default function BottomNav() {
             className={`flex flex-col items-center justify-center rounded-full px-3 py-1 active:scale-90 duration-200 ${
               isActive
                 ? 'bg-primary-container text-on-primary-container'
-                : 'text-on-surface-variant hover:text-primary'
+                : 'text-[#e5e2e1]-variant hover:text-primary'
             }`}
           >
             <span className="material-symbols-outlined">{icon}</span>

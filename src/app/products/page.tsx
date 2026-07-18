@@ -26,24 +26,24 @@ export default function ProductsPage() {
     <>
       <div className="flex items-center justify-between mb-lg">
         <div>
-          <h2 className="font-headline-md text-on-surface">Products</h2>
-          <p className="font-label-sm text-on-surface-variant">Manage your cafe & billiard products</p>
+          <h2 className="font-headline-md text-[#e5e2e1]">Products</h2>
+          <p className="font-label-sm text-[#e5e2e1]-variant">Manage your cafe & billiard products</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-lg">
         {products.map(p => (
-          <div key={p.id} className="glass-card rounded-xl p-lg glow-hover transition-all">
-            <div className="w-full h-32 bg-surface-container-highest rounded-lg flex items-center justify-center mb-lg">
-              <span className="material-symbols-outlined text-4xl text-on-surface-variant/30">
+          <div key={p.id} className="glass-card rounded-xl p-6 glow-hover transition-all">
+            <div className="w-full h-32 bg-[#201f1f]-highest rounded-lg flex items-center justify-center mb-lg">
+              <span className="material-symbols-outlined text-4xl text-[#e5e2e1]-variant/30">
                 {p.product_type === 'makanan' ? 'restaurant' : 'local_cafe'}
               </span>
             </div>
-            <h3 className="font-headline-md text-on-surface mb-xs">{p.name}</h3>
-            <p className="font-label-sm text-on-surface-variant mb-lg">{categoryMap[p.category_id] || '-'}</p>
+            <h3 className="font-headline-md text-[#e5e2e1] mb-xs">{p.name}</h3>
+            <p className="font-label-sm text-[#e5e2e1]-variant mb-lg">{categoryMap[p.category_id] || '-'}</p>
             <div className="flex justify-between items-center">
               <span className="font-bold text-primary text-headline-md">Rp {parseInt(p.price).toLocaleString('id-ID')}</span>
-              <span className={`font-label-sm ${p.stock > 5 ? 'text-on-surface-variant' : 'text-error'}`}>
+              <span className={`font-label-sm ${p.stock > 5 ? 'text-[#e5e2e1]-variant' : 'text-error'}`}>
                 Stock: {p.stock}
               </span>
             </div>

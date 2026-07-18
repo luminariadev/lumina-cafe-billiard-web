@@ -4,8 +4,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 
 export const metadata: Metadata = {
-  title: "Cue & Brew | Management Portal",
-  description: "Cue & Brew Billiard & Cafe Management System",
+  title: "Lumina | Management Portal",
+  description: "Lumina Billiard & Cafe Management System",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-background text-on-surface antialiased selection:bg-primary/30">
+      <body className="min-h-screen bg-background text-[#e5e2e1] antialiased selection:bg-primary/30">
         <AuthProvider>
           <AuthenticatedLayout>{children}</AuthenticatedLayout>
         </AuthProvider>

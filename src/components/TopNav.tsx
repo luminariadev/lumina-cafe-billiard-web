@@ -21,7 +21,7 @@ export default function TopNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const pageTitle = PAGE_TITLES[pathname] || 'Cue & Brew';
+  const pageTitle = PAGE_TITLES[pathname] || 'Lumina';
 
   if (!user) return null;
 
@@ -45,15 +45,15 @@ function MobileNav({ isOpen, onClose, title }: { isOpen: boolean; onClose: () =>
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       {/* Menu content */}
-      <aside className="absolute left-0 top-0 h-full w-72 bg-surface-container-low flex flex-col py-lg px-md shadow-2xl">
+      <aside className="absolute left-0 top-0 h-full w-72 bg-[#1c1b1b] flex flex-col py-lg px-md shadow-2xl">
         {/* Brand */}
         <div className="mb-xl flex items-center gap-sm">
           <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
             <span className="material-symbols-outlined text-on-primary" style={{ fontVariationSettings: "'FILL' 1" }}>sports_bar</span>
           </div>
           <div>
-            <h1 className="font-headline-md text-primary font-black leading-none">Cue & Brew</h1>
-            <p className="font-label-sm text-on-surface-variant">Management Portal</p>
+            <h1 className="font-headline-md text-primary font-black leading-none">Lumina</h1>
+            <p className="font-label-sm text-[#e5e2e1]-variant">Management Portal</p>
           </div>
         </div>
         {/* Links */}
@@ -62,7 +62,7 @@ function MobileNav({ isOpen, onClose, title }: { isOpen: boolean; onClose: () =>
             <a
               key={path}
               href={path}
-              className="flex items-center gap-md p-md rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-primary transition-colors"
+              className="flex items-center gap-4 p-4 rounded-lg text-[#e5e2e1]-variant font-medium hover:bg-[#201f1f]-high hover:text-primary transition-colors"
             >
               <span className="material-symbols-outlined">
                 {path === '/dashboard' ? 'dashboard' :
@@ -88,16 +88,16 @@ export function MainTopNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const pageTitle = PAGE_TITLES[pathname] || 'Cue & Brew';
+  const pageTitle = PAGE_TITLES[pathname] || 'Lumina';
 
   if (!user) return null;
 
   return (
-    <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/10 shadow-sm">
-      <div className="flex justify-between items-center w-full px-lg py-md max-w-container-max mx-auto">
+    <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-[#869486]-variant/10 shadow-sm">
+      <div className="flex justify-between items-center w-full px-lg py-md max-w-[1440px] mx-auto">
         <div className="flex items-center gap-md">
           <button
-            className="md:hidden text-on-surface p-2 hover:bg-surface-container-high rounded-lg"
+            className="md:hidden text-[#e5e2e1] p-2 hover:bg-[#201f1f]-high rounded-lg"
             onClick={() => setMobileMenuOpen(true)}
           >
             <span className="material-symbols-outlined">menu</span>
@@ -106,20 +106,20 @@ export function MainTopNav() {
         </div>
         <div className="flex-1 max-w-xl mx-lg hidden sm:block">
           <div className="relative group">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#e5e2e1]-variant group-focus-within:text-primary transition-colors">search</span>
             <input
-              className="w-full bg-surface-container-lowest border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary rounded-full py-2 pl-12 pr-4 text-body-md transition-all outline-none text-on-surface placeholder-on-surface-variant"
+              className="w-full bg-[#1c1b1b]est border-[#869486]-variant/30 focus:border-primary focus:ring-1 focus:ring-primary rounded-full py-2 pl-12 pr-4 text-body-md transition-all outline-none text-[#e5e2e1] placeholder-on-surface-variant"
               placeholder="Search tables, orders, or members..."
               type="text"
             />
           </div>
         </div>
         <div className="flex items-center gap-md">
-          <button className="p-2 rounded-full hover:bg-surface-container text-on-surface-variant relative">
+          <button className="p-2 rounded-full hover:bg-[#201f1f] text-[#e5e2e1]-variant relative">
             <span className="material-symbols-outlined">notifications</span>
             <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
           </button>
-          <button className="p-2 rounded-full hover:bg-surface-container text-on-surface-variant">
+          <button className="p-2 rounded-full hover:bg-[#201f1f] text-[#e5e2e1]-variant">
             <span className="material-symbols-outlined">help_outline</span>
           </button>
         </div>
@@ -139,18 +139,18 @@ function MobileSidebar({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[70] md:hidden">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <aside className="absolute left-0 top-0 h-full w-72 bg-surface-container-low flex flex-col py-lg px-md shadow-2xl">
+      <aside className="absolute left-0 top-0 h-full w-72 bg-[#1c1b1b] flex flex-col py-lg px-md shadow-2xl">
         <div className="mb-xl flex items-center justify-between">
           <div className="flex items-center gap-sm">
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <span className="material-symbols-outlined text-on-primary" style={{ fontVariationSettings: "'FILL' 1" }}>sports_bar</span>
             </div>
             <div>
-              <h1 className="font-headline-md text-primary font-black leading-none">Cue & Brew</h1>
-              <p className="font-label-sm text-on-surface-variant">Management Portal</p>
+              <h1 className="font-headline-md text-primary font-black leading-none">Lumina</h1>
+              <p className="font-label-sm text-[#e5e2e1]-variant">Management Portal</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-surface-container-high rounded-lg">
+          <button onClick={onClose} className="p-2 hover:bg-[#201f1f]-high rounded-lg">
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
@@ -159,7 +159,7 @@ function MobileSidebar({ onClose }: { onClose: () => void }) {
             <a
               key={path}
               href={path}
-              className="flex items-center gap-md p-md rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-primary transition-colors"
+              className="flex items-center gap-4 p-4 rounded-lg text-[#e5e2e1]-variant font-medium hover:bg-[#201f1f]-high hover:text-primary transition-colors"
             >
               <span className="material-symbols-outlined">
                 {path === '/dashboard' ? 'dashboard' :
@@ -175,19 +175,19 @@ function MobileSidebar({ onClose }: { onClose: () => void }) {
             </a>
           ))}
         </nav>
-        <div className="mt-auto border-t border-outline-variant/10 pt-md space-y-xs">
-          <div className="flex items-center gap-md p-md">
-            <div className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+        <div className="mt-auto border-t border-[#869486]-variant/10 pt-md space-y-xs">
+          <div className="flex items-center gap-4 p-md">
+            <div className="w-10 h-10 rounded-full bg-[#201f1f]-highest overflow-hidden">
               <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
                 {user?.name?.charAt(0) || 'U'}
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-label-md text-on-surface truncate">{user?.name || 'User'}</p>
-              <p className="font-label-sm text-on-surface-variant truncate">{user?.role}</p>
+              <p className="font-label-md text-[#e5e2e1] truncate">{user?.name || 'User'}</p>
+              <p className="font-label-sm text-[#e5e2e1]-variant truncate">{user?.role}</p>
             </div>
           </div>
-          <button onClick={logout} className="flex items-center gap-md p-md rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-error transition-colors w-full">
+          <button onClick={logout} className="flex items-center gap-4 p-4 rounded-lg text-[#e5e2e1]-variant font-medium hover:bg-[#201f1f]-high hover:text-error transition-colors w-full">
             <span className="material-symbols-outlined">logout</span>
             <span className="font-label-md">Logout</span>
           </button>

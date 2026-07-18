@@ -20,20 +20,20 @@ export default function CategoriesPage() {
     <>
       <div className="flex items-center justify-between mb-lg">
         <div>
-          <h2 className="font-headline-md text-on-surface">Categories</h2>
-          <p className="font-label-sm text-on-surface-variant">Manage product categories</p>
+          <h2 className="font-headline-md text-[#e5e2e1]">Categories</h2>
+          <p className="font-label-sm text-[#e5e2e1]-variant">Manage product categories</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-lg">
         {categories.map(cat => (
-          <div key={cat.id} className="glass-card p-lg rounded-xl glow-hover transition-all">
+          <div key={cat.id} className="glass-card p-6 rounded-xl glow-hover transition-all">
             <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-lg">
               <span className="material-symbols-outlined text-primary">category</span>
             </div>
-            <h3 className="font-headline-md text-on-surface mb-xs">{cat.name}</h3>
+            <h3 className="font-headline-md text-[#e5e2e1] mb-xs">{cat.name}</h3>
             {cat.description && (
-              <p className="font-label-sm text-on-surface-variant">{cat.description}</p>
+              <p className="font-label-sm text-[#e5e2e1]-variant">{cat.description}</p>
             )}
           </div>
         ))}

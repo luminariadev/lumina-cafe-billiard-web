@@ -24,21 +24,21 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="glass-card w-full max-w-md p-8 rounded-2xl text-on-surface text-center shadow-lg">
+      <div className="glass-card w-full max-w-md p-8 rounded-2xl text-[#e5e2e1] text-center shadow-lg">
         <div className="mb-8">
-          <h1 className="font-headline-lg text-primary text-4xl font-black mb-2">Cue & Brew</h1>
-          <p className="text-on-surface-variant text-lg">Management Portal</p>
+          <h1 className="font-headline-lg text-primary text-4xl font-black mb-2">Lumina</h1>
+          <p className="text-[#e5e2e1]-variant text-lg">Management Portal</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-left text-label-md text-on-surface-variant mb-2" htmlFor="username">
+            <label className="block text-left text-label-md text-[#e5e2e1]-variant mb-2" htmlFor="username">
               Username
             </label>
             <input
               type="text"
               id="username"
-              className="w-full p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-body-md"
+              className="w-full p-4 rounded-xl bg-[#1c1b1b] border border-[#869486]-variant/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-body-md"
               placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -46,13 +46,13 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="block text-left text-label-md text-on-surface-variant mb-2" htmlFor="password">
+            <label className="block text-left text-label-md text-[#e5e2e1]-variant mb-2" htmlFor="password">
               Password
             </label>
             <input
               type="password"
               id="password"
-              className="w-full p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-body-md"
+              className="w-full p-4 rounded-xl bg-[#1c1b1b] border border-[#869486]-variant/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-body-md"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

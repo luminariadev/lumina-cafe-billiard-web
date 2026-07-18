@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Ensure this is compatible or remove if web only
 import { User, login as apiLogin, setToken } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 

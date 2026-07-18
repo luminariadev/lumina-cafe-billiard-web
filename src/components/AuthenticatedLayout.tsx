@@ -28,7 +28,7 @@ export default function AuthenticatedLayout({ children }: AuthenticatedLayoutPro
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <span className="material-symbols-outlined text-primary text-6xl animate-pulse">sports_bar</span>
-          <p className="mt-4 text-on-surface-variant font-label-md">Loading...</p>
+          <p className="mt-4 text-[#e5e2e1]-variant font-label-md">Loading...</p>
         </div>
       </div>
     );
@@ -49,7 +49,7 @@ export default function AuthenticatedLayout({ children }: AuthenticatedLayoutPro
       <Sidebar />
       <main className="md:ml-64 min-h-screen flex flex-col flex-1">
         <MainTopNav />
-        <div className="p-lg max-w-container-max mx-auto w-full space-y-lg">
+        <div className="p-lg max-w-[1440px] mx-auto w-full space-y-lg">
           {children}
         </div>
         <BottomNav />

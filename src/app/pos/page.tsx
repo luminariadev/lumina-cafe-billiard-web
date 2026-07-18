@@ -86,7 +86,7 @@ export default function PosPage() {
         <button
           onClick={() => setTab('billiard')}
           className={`flex items-center gap-2 px-lg py-md rounded-xl font-label-md transition-all ${
-            tab === 'billiard' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant hover:text-primary'
+            tab === 'billiard' ? 'bg-primary text-on-primary' : 'bg-[#201f1f]-high text-[#e5e2e1]-variant hover:text-primary'
           }`}
         >
           <span className="material-symbols-outlined text-sm">sports_bar</span> Billiards
@@ -94,7 +94,7 @@ export default function PosPage() {
         <button
           onClick={() => setTab('cafe')}
           className={`flex items-center gap-2 px-lg py-md rounded-xl font-label-md transition-all ${
-            tab === 'cafe' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant hover:text-primary'
+            tab === 'cafe' ? 'bg-primary text-on-primary' : 'bg-[#201f1f]-high text-[#e5e2e1]-variant hover:text-primary'
           }`}
         >
           <span className="material-symbols-outlined text-sm">local_cafe</span> Cafe
@@ -132,16 +132,16 @@ function BilliardView({ mejas }: { mejas: Meja[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
       <div className="glass-card rounded-xl p-lg">
-        <h4 className="font-headline-md text-on-surface mb-md">Active Sessions</h4>
+        <h4 className="font-headline-md text-[#e5e2e1] mb-md">Active Sessions</h4>
         {activeMejas.length === 0 ? (
-          <p className="text-on-surface-variant font-label-md text-center py-xl">No active sessions</p>
+          <p className="text-[#e5e2e1]-variant font-label-md text-center py-xl">No active sessions</p>
         ) : (
           <div className="space-y-md">
             {activeMejas.map(m => (
-              <div key={m.id} className="flex items-center justify-between p-md rounded-lg bg-surface-container-low border border-primary/20 active-glow">
+              <div key={m.id} className="flex items-center justify-between p-4 rounded-lg bg-[#1c1b1b] border border-primary/20 active-glow">
                 <div>
                   <p className="font-label-md text-primary">Table {String(m.nomor_meja).padStart(2, '0')}</p>
-                  <p className="font-label-sm text-on-surface-variant">{m.keterangan || 'In use'}</p>
+                  <p className="font-label-sm text-[#e5e2e1]-variant">{m.keterangan || 'In use'}</p>
                 </div>
                 <span className="material-symbols-outlined text-primary">timer</span>
               </div>
@@ -150,12 +150,12 @@ function BilliardView({ mejas }: { mejas: Meja[] }) {
         )}
       </div>
       <div className="glass-card rounded-xl p-lg">
-        <h4 className="font-headline-md text-on-surface mb-md">Available Tables</h4>
+        <h4 className="font-headline-md text-[#e5e2e1] mb-md">Available Tables</h4>
         <div className="grid grid-cols-2 gap-md">
           {availableMejas.map(m => (
-            <div key={m.id} className="p-md rounded-lg bg-surface-container-low border border-outline-variant/10 text-center hover:border-primary/40 transition-all cursor-pointer">
+            <div key={m.id} className="p-md rounded-lg bg-[#1c1b1b] border border-[#869486]-variant/10 text-center hover:border-primary/40 transition-all cursor-pointer">
               <p className="font-label-md text-primary">Table {String(m.nomor_meja).padStart(2, '0')}</p>
-              <p className="font-label-sm text-on-surface-variant capitalize">{m.status}</p>
+              <p className="font-label-sm text-[#e5e2e1]-variant capitalize">{m.status}</p>
             </div>
           ))}
         </div>
@@ -184,10 +184,10 @@ function CafeView({
             <button
               key={product.id}
               onClick={() => addToCart(product)}
-              className="group flex flex-col bg-surface-container rounded-2xl overflow-hidden border border-outline-variant/10 hover:border-primary/40 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-left"
+              className="group flex flex-col bg-[#201f1f] rounded-2xl overflow-hidden border border-[#869486]-variant/10 hover:border-primary/40 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-left"
             >
-              <div className="aspect-[16/10] bg-surface-container-highest overflow-hidden relative flex items-center justify-center">
-                <span className="material-symbols-outlined text-4xl text-on-surface-variant/30 group-hover:scale-110 transition-transform">
+              <div className="aspect-[16/10] bg-[#201f1f]-highest overflow-hidden relative flex items-center justify-center">
+                <span className="material-symbols-outlined text-4xl text-[#e5e2e1]-variant/30 group-hover:scale-110 transition-transform">
                   {product.product_type === 'makanan' ? 'restaurant' : 'local_cafe'}
                 </span>
                 <div className="absolute top-3 right-3 px-3 py-1 bg-surface/90 backdrop-blur-md rounded-full text-primary font-bold text-label-md">
@@ -200,8 +200,8 @@ function CafeView({
                 )}
               </div>
               <div className="p-lg">
-                <h3 className="font-headline-md text-on-surface mb-xs">{product.name}</h3>
-                <p className="text-on-surface-variant text-label-sm mb-lg line-clamp-1">{product.product_type || 'Product'}</p>
+                <h3 className="font-headline-md text-[#e5e2e1] mb-xs">{product.name}</h3>
+                <p className="text-[#e5e2e1]-variant text-label-sm mb-lg line-clamp-1">{product.product_type || 'Product'}</p>
                 <div className="flex items-center justify-between text-primary">
                   <span className="font-label-md">Add to Order</span>
                   <span className="material-symbols-outlined">add_circle</span>
@@ -213,25 +213,25 @@ function CafeView({
       </div>
 
       {/* Cart Sidebar */}
-      <aside className="w-full lg:w-[400px] flex flex-col bg-surface-container-low rounded-2xl p-lg border border-outline-variant/10 shadow-2xl h-fit lg:sticky lg:top-24">
+      <aside className="w-full lg:w-[400px] flex flex-col bg-[#1c1b1b] rounded-2xl p-6 border border-[#869486]-variant/10 shadow-2xl h-fit lg:sticky lg:top-24">
         <div className="flex justify-between items-center mb-lg">
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">Current Order</h2>
-          <button onClick={clearCart} className="text-on-surface-variant hover:text-error transition-colors font-label-md uppercase tracking-wider">Clear</button>
+          <h2 className="font-headline-lg text-headline-lg text-[#e5e2e1]">Current Order</h2>
+          <button onClick={clearCart} className="text-[#e5e2e1]-variant hover:text-error transition-colors font-label-md uppercase tracking-wider">Clear</button>
         </div>
 
         {/* Payment Method */}
-        <div className="bg-surface-container-lowest rounded-xl p-md border border-outline-variant/10 mb-lg">
-          <p className="font-label-sm text-on-surface-variant uppercase tracking-widest mb-sm">Payment Method</p>
+        <div className="bg-[#1c1b1b]est rounded-xl p-4 border border-[#869486]-variant/10 mb-lg">
+          <p className="font-label-sm text-[#e5e2e1]-variant uppercase tracking-widest mb-sm">Payment Method</p>
           <div className="flex gap-2">
             <button
               onClick={() => setPaymentMethod('cash')}
-              className={`flex-1 py-2 border rounded-lg font-bold text-sm transition-all ${paymentMethod === 'cash' ? 'border-primary bg-primary/10 text-primary' : 'border-outline-variant/20 bg-surface text-on-surface-variant hover:border-primary/40'}`}
+              className={`flex-1 py-2 border rounded-lg font-bold text-sm transition-all ${paymentMethod === 'cash' ? 'border-primary bg-primary/10 text-primary' : 'border-[#869486]-variant/20 bg-surface text-[#e5e2e1]-variant hover:border-primary/40'}`}
             >
               Cash
             </button>
             <button
               onClick={() => setPaymentMethod('qris')}
-              className={`flex-1 py-2 border rounded-lg font-bold text-sm transition-all ${paymentMethod === 'qris' ? 'border-primary bg-primary/10 text-primary' : 'border-outline-variant/20 bg-surface text-on-surface-variant hover:border-primary/40'}`}
+              className={`flex-1 py-2 border rounded-lg font-bold text-sm transition-all ${paymentMethod === 'qris' ? 'border-primary bg-primary/10 text-primary' : 'border-[#869486]-variant/20 bg-surface text-[#e5e2e1]-variant hover:border-primary/40'}`}
             >
               QRIS
             </button>
@@ -241,23 +241,23 @@ function CafeView({
         {/* Cart Items */}
         <div className="flex-1 overflow-y-auto space-y-md mb-lg max-h-80 custom-scrollbar" id="cart-container">
           {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center text-on-surface-variant/40 py-xl">
+            <div className="flex flex-col items-center justify-center text-[#e5e2e1]-variant/40 py-xl">
               <span className="material-symbols-outlined text-6xl mb-md">shopping_cart_checkout</span>
               <p className="font-body-md">Order is empty</p>
               <p className="text-label-sm">Select items to add</p>
             </div>
           ) : (
             cart.map(item => (
-              <div key={item.productId} className="flex items-center justify-between p-md bg-surface rounded-xl border border-outline-variant/10 group hover:border-primary/20 transition-colors">
+              <div key={item.productId} className="flex items-center justify-between p-4 bg-surface rounded-xl border border-[#869486]-variant/10 group hover:border-primary/20 transition-colors">
                 <div className="flex-1 min-w-0 mr-4">
-                  <h4 className="font-label-md text-on-surface truncate">{item.name}</h4>
+                  <h4 className="font-label-md text-[#e5e2e1] truncate">{item.name}</h4>
                   <p className="text-primary font-bold">Rp {(item.price * item.qty).toLocaleString('id-ID')}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center bg-surface-container-high rounded-lg p-1 border border-outline-variant/20">
-                    <button onClick={() => updateQty(item.productId, -1)} className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">-</button>
-                    <span className="w-6 text-center font-bold text-on-surface">{item.qty}</span>
-                    <button onClick={() => updateQty(item.productId, 1)} className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">+</button>
+                  <div className="flex items-center bg-[#201f1f]-high rounded-lg p-1 border border-[#869486]-variant/20">
+                    <button onClick={() => updateQty(item.productId, -1)} className="w-8 h-8 flex items-center justify-center text-[#e5e2e1]-variant hover:text-primary transition-colors">-</button>
+                    <span className="w-6 text-center font-bold text-[#e5e2e1]">{item.qty}</span>
+                    <button onClick={() => updateQty(item.productId, 1)} className="w-8 h-8 flex items-center justify-center text-[#e5e2e1]-variant hover:text-primary transition-colors">+</button>
                   </div>
                   <button onClick={() => removeFromCart(item.productId)} className="material-symbols-outlined text-on-error/40 hover:text-error transition-colors">delete</button>
                 </div>
@@ -267,12 +267,12 @@ function CafeView({
         </div>
 
         {/* Summary */}
-        <div className="space-y-md pt-lg border-t border-outline-variant/10">
-          <div className="flex justify-between font-label-md text-on-surface-variant">
+        <div className="space-y-md pt-lg border-t border-[#869486]-variant/10">
+          <div className="flex justify-between font-label-md text-[#e5e2e1]-variant">
             <span>Subtotal</span>
             <span className="font-bold" id="subtotal">Rp {subtotal.toLocaleString('id-ID')}</span>
           </div>
-          <div className="flex justify-between font-label-md text-on-surface-variant">
+          <div className="flex justify-between font-label-md text-[#e5e2e1]-variant">
             <span>PPN (12%)</span>
             <span className="font-bold">Rp {tax.toLocaleString('id-ID')}</span>
           </div>

@@ -20,33 +20,33 @@ export default function TransaksisPage() {
     <>
       <div className="flex items-center justify-between mb-lg">
         <div>
-          <h2 className="font-headline-md text-on-surface">Transaction History</h2>
-          <p className="font-label-sm text-on-surface-variant">Manage all billiard & cafe transactions</p>
+          <h2 className="font-headline-md text-[#e5e2e1]">Transaction History</h2>
+          <p className="font-label-sm text-[#e5e2e1]-variant">Manage all billiard & cafe transactions</p>
         </div>
       </div>
 
       <div className="glass-card rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-surface-container-low">
+            <thead className="bg-[#1c1b1b]">
               <tr>
-                <th className="px-lg py-md font-label-sm text-on-surface-variant">CODE</th>
-                <th className="px-lg py-md font-label-sm text-on-surface-variant">TYPE</th>
-                <th className="px-lg py-md font-label-sm text-on-surface-variant">CUSTOMER</th>
-                <th className="px-lg py-md font-label-sm text-on-surface-variant">AMOUNT</th>
-                <th className="px-lg py-md font-label-sm text-on-surface-variant">PAYMENT</th>
-                <th className="px-lg py-md font-label-sm text-on-surface-variant">STATUS</th>
-                <th className="px-lg py-md font-label-sm text-on-surface-variant">CREATED</th>
+                <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">CODE</th>
+                <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">TYPE</th>
+                <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">CUSTOMER</th>
+                <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">AMOUNT</th>
+                <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">PAYMENT</th>
+                <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">STATUS</th>
+                <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">CREATED</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/5">
               {transaksis.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-lg py-md text-center text-on-surface-variant font-label-md py-xl">No transactions yet</td>
+                  <td colSpan={7} className="px-lg py-md text-center text-[#e5e2e1]-variant font-label-md py-xl">No transactions yet</td>
                 </tr>
               ) : (
                 transaksis.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-surface-container-high transition-colors">
+                  <tr key={tx.id} className="hover:bg-[#201f1f]-high transition-colors">
                     <td className="px-lg py-md font-label-md text-primary">{tx.kode_transaksi}</td>
                     <td className="px-lg py-md">
                       <div className="flex items-center gap-sm">
@@ -59,7 +59,7 @@ export default function TransaksisPage() {
                       </div>
                     </td>
                     <td className="px-lg py-md font-body-md">{tx.nama_pelanggan || '-'}</td>
-                    <td className="px-lg py-md text-body-md font-bold text-on-surface">
+                    <td className="px-lg py-md text-body-md font-bold text-[#e5e2e1]">
                       Rp {(tx.total_bayar ? parseFloat(tx.total_bayar) : 0).toLocaleString('id-ID')}
                     </td>
                     <td className="px-lg py-md">
@@ -68,19 +68,19 @@ export default function TransaksisPage() {
                           {tx.payment_method}
                         </span>
                       ) : (
-                        <span className="text-on-surface-variant text-label-sm">-</span>
+                        <span className="text-[#e5e2e1]-variant text-label-sm">-</span>
                       )}
                     </td>
                     <td className="px-lg py-md">
                       <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                         tx.status === 'dibayar' ? 'bg-primary/10 text-primary' :
                         tx.status === 'aktif' ? 'bg-secondary/10 text-secondary' :
-                        'bg-surface-container-highest text-on-surface-variant'
+                        'bg-[#201f1f]-highest text-[#e5e2e1]-variant'
                       }`}>
                         {tx.status}
                       </span>
                     </td>
-                    <td className="px-lg py-md text-label-sm text-on-surface-variant">
+                    <td className="px-lg py-md text-label-sm text-[#e5e2e1]-variant">
                       {new Date(tx.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                   </tr>

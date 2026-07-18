@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { getReports, getTransaksis, Report, Transaksi } from '@/lib/api';
+import { getReports, getTransaksis } from '@/lib/api';
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const [report, setReport] = useState<Report | null>(null);
-  const [recentTransaksis, setRecentTransaksis] = useState<Transaksi[]>([]);
+  const [report, setReport] = useState<any | null>(null);
+  const [recentTransaksis, setRecentTransaksis] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -75,15 +75,15 @@ export default function DashboardPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-lg">
           {/* Revenue Trends */}
-          <div className="glass-card rounded-xl p-lg h-[400px] relative overflow-hidden flex flex-col">
+          <div className="glass-card rounded-xl p-6 h-[400px] relative overflow-hidden flex flex-col">
             <div className="flex justify-between items-center mb-xl relative z-10">
               <div>
-                <h4 className="font-headline-md text-on-surface">Revenue Trends</h4>
-                <p className="font-label-sm text-on-surface-variant">Consolidated daily performance report</p>
+                <h4 className="font-headline-md text-[#e5e2e1]">Revenue Trends</h4>
+                <p className="font-label-sm text-[#e5e2e1]-variant">Consolidated daily performance report</p>
               </div>
-              <div className="flex gap-2 bg-surface-container-lowest p-1 rounded-lg">
-                <button className="px-3 py-1 text-label-sm font-label-sm rounded-md bg-surface-container-high text-primary">Daily</button>
-                <button className="px-3 py-1 text-label-sm font-label-sm rounded-md text-on-surface-variant hover:text-on-surface">Weekly</button>
+              <div className="flex gap-2 bg-[#1c1b1b]est p-1 rounded-lg">
+                <button className="px-3 py-1 text-label-sm font-label-sm rounded-md bg-[#201f1f]-high text-primary">Daily</button>
+                <button className="px-3 py-1 text-label-sm font-label-sm rounded-md text-[#e5e2e1]-variant hover:text-[#e5e2e1]">Weekly</button>
               </div>
             </div>
             {/* Chart Placeholder */}
@@ -94,7 +94,7 @@ export default function DashboardPage() {
                   className="flex-1 bg-primary/20 hover:bg-primary/40 transition-all rounded-t-sm cursor-default group relative"
                   style={{ height: `${Math.random() * 60 + 20}%` }}
                 >
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-on-surface">
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#201f1f] px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-[#e5e2e1]">
                     Rp {Math.floor(Math.random() * 500000 + 100000).toLocaleString('id-ID')}
                   </div>
                 </div>
@@ -104,29 +104,29 @@ export default function DashboardPage() {
 
           {/* Recent Transactions */}
           <div className="glass-card rounded-xl overflow-hidden">
-            <div className="p-lg border-b border-outline-variant/10 flex justify-between items-center">
-              <h4 className="font-headline-md text-on-surface">Recent Transactions</h4>
+            <div className="p-lg border-b border-[#869486]-variant/10 flex justify-between items-center">
+              <h4 className="font-headline-md text-[#e5e2e1]">Recent Transactions</h4>
               <a href="/transaksis" className="text-primary font-label-md hover:underline">View All</a>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
-                <thead className="bg-surface-container-low">
+                <thead className="bg-[#1c1b1b]">
                   <tr>
-                    <th className="px-lg py-md font-label-sm text-on-surface-variant">ENTITY</th>
-                    <th className="px-lg py-md font-label-sm text-on-surface-variant">TYPE</th>
-                    <th className="px-lg py-md font-label-sm text-on-surface-variant">AMOUNT</th>
-                    <th className="px-lg py-md font-label-sm text-on-surface-variant">STATUS</th>
-                    <th className="px-lg py-md font-label-sm text-on-surface-variant">TIME</th>
+                    <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">ENTITY</th>
+                    <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">TYPE</th>
+                    <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">AMOUNT</th>
+                    <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">STATUS</th>
+                    <th className="px-lg py-md font-label-sm text-[#e5e2e1]-variant">TIME</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant/5">
                   {recentTransaksis.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-lg py-md text-center text-on-surface-variant font-label-md">No recent transactions</td>
+                      <td colSpan={5} className="px-lg py-md text-center text-[#e5e2e1]-variant font-label-md">No recent transactions</td>
                     </tr>
                   ) : (
                     recentTransaksis.map((tx) => (
-                      <tr key={tx.id} className="hover:bg-surface-container-high transition-colors">
+                      <tr key={tx.id} className="hover:bg-[#201f1f]-high transition-colors">
                         <td className="px-lg py-md">
                           <div className="flex items-center gap-sm">
                             <div className={`w-8 h-8 rounded flex items-center justify-center ${
@@ -143,10 +143,10 @@ export default function DashboardPage() {
                             </span>
                           </div>
                         </td>
-                        <td className="px-lg py-md text-label-md text-on-surface-variant">
+                        <td className="px-lg py-md text-label-md text-[#e5e2e1]-variant">
                           {tx.transaksi_type === 'billiard' ? 'Booking' : 'Cafe Order'}
                         </td>
-                        <td className="px-lg py-md text-body-md font-bold text-on-surface">
+                        <td className="px-lg py-md text-body-md font-bold text-[#e5e2e1]">
                           Rp {tx.total_amount.toLocaleString('id-ID')}
                         </td>
                         <td className="px-lg py-md">
@@ -157,7 +157,7 @@ export default function DashboardPage() {
                             {tx.status}
                           </span>
                         </td>
-                        <td className="px-lg py-md text-label-sm text-on-surface-variant">
+                        <td className="px-lg py-md text-label-sm text-[#e5e2e1]-variant">
                           {new Date(tx.jam_mulai).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                         </td>
                       </tr>
@@ -173,14 +173,14 @@ export default function DashboardPage() {
         <div className="space-y-lg">
           {/* Quick Stats */}
           <div className="glass-card rounded-xl p-lg">
-            <h4 className="font-headline-md text-on-surface mb-md">Quick Stats</h4>
+            <h4 className="font-headline-md text-[#e5e2e1] mb-md">Quick Stats</h4>
             <div className="space-y-md">
-              <div className="flex justify-between items-center p-md rounded-lg bg-surface-container-low border border-outline-variant/10">
-                <span className="font-label-md text-on-surface-variant">Today Transactions</span>
+              <div className="flex justify-between items-center p-4 rounded-lg bg-[#1c1b1b] border border-[#869486]-variant/10">
+                <span className="font-label-md text-[#e5e2e1]-variant">Today Transactions</span>
                 <span className="font-bold text-primary font-label-md">{report?.today_transactions || 0}</span>
               </div>
-              <div className="flex justify-between items-center p-md rounded-lg bg-surface-container-low border border-outline-variant/10">
-                <span className="font-label-md text-on-surface-variant">Monthly Transactions</span>
+              <div className="flex justify-between items-center p-4 rounded-lg bg-[#1c1b1b] border border-[#869486]-variant/10">
+                <span className="font-label-md text-[#e5e2e1]-variant">Monthly Transactions</span>
                 <span className="font-bold text-primary font-label-md">{report?.monthly_transactions || 0}</span>
               </div>
             </div>
@@ -189,18 +189,18 @@ export default function DashboardPage() {
           {/* Best Sellers */}
           {report?.best_sellers && report.best_sellers.length > 0 && (
             <div className="glass-card rounded-xl p-lg">
-              <h4 className="font-headline-md text-on-surface mb-md">Best Sellers</h4>
-              <div className="space-y-md">
-                {report.best_sellers.map((item, idx) => (
-                  <div key={item.name} className="flex items-center gap-md p-md rounded-lg bg-surface-container-low border border-outline-variant/10">
+              <h4 className="text-[20px] font-semibold font-[Montserrat] text-gray-200 mb-6">Best Sellers</h4>
+              <div className="space-y-4">
+                {report.best_sellers.map((item: any, idx: number) => (
+                  <div key={item.name} className="flex items-center gap-4 p-4 rounded-lg bg-gray-900 border border-gray-700/10">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                      idx === 0 ? 'bg-tertiary/20 text-tertiary' : 'bg-surface-container-highest text-on-surface-variant'
+                      idx === 0 ? 'bg-amber-500/20 text-amber-500' : 'bg-gray-800 text-gray-400'
                     }`}>
                       {idx + 1}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-label-md text-on-surface truncate">{item.name}</p>
-                      <p className="font-label-sm text-on-surface-variant">{item.quantity} sold</p>
+                      <p className="text-[14px] font-semibold font-[Inter] text-gray-200 truncate">{item.name}</p>
+                      <p className="text-[12px] font-medium font-[Inter] text-gray-400">{item.quantity} sold</p>
                     </div>
                   </div>
                 ))}
@@ -209,7 +209,7 @@ export default function DashboardPage() {
           )}
 
           {/* Quick Action */}
-          <div className="bg-primary p-lg rounded-xl flex flex-col items-center text-center">
+          <div className="bg-primary p-6 rounded-xl flex flex-col items-center text-center">
             <span className="material-symbols-outlined text-on-primary text-[48px] mb-sm" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
             <h5 className="font-headline-md text-on-primary font-bold">New Session</h5>
             <p className="font-label-sm text-on-primary/80 mb-md">Start a billiard session or take a cafe order.</p>
@@ -241,7 +241,7 @@ function StatCard({ icon, color, label, value, badge, live }: {
   };
 
   return (
-    <div className="glass-card p-lg rounded-xl glow-hover transition-all">
+    <div className="glass-card p-6 rounded-xl glow-hover transition-all">
       <div className="flex justify-between items-start mb-md">
         <div className={`p-2 ${colorMap[color].bg} rounded-lg`}>
           <span className={`material-symbols-outlined ${colorMap[color].text}`}>{icon}</span>
@@ -255,8 +255,8 @@ function StatCard({ icon, color, label, value, badge, live }: {
           <span className={`font-bold font-label-sm text-label-sm ${colorMap[color].text}`}>{badge}</span>
         )}
       </div>
-      <p className="font-label-md text-label-md text-on-surface-variant">{label}</p>
-      <h3 className="font-headline-lg text-headline-lg text-on-surface mt-xs">{value}</h3>
+      <p className="font-label-md text-label-md text-[#e5e2e1]-variant">{label}</p>
+      <h3 className="font-headline-lg text-headline-lg text-[#e5e2e1] mt-xs">{value}</h3>
     </div>
   );
 }

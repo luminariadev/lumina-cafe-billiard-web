@@ -29,33 +29,33 @@ export default function ReceiptPage() {
 
   return (
     <div className="max-w-md mx-auto" id="receipt-content">
-      <div className="glass-card rounded-xl p-lg text-center">
+      <div className="glass-card rounded-xl p-6 text-center">
         <div className="mb-4">
           <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mx-auto mb-2">
             <span className="material-symbols-outlined text-on-primary" style={{ fontVariationSettings: "'FILL' 1" }}>receipt_long</span>
           </div>
-          <h2 className="font-headline-md text-primary">Cue & Brew</h2>
-          <p className="font-label-sm text-on-surface-variant">Payment Receipt</p>
+          <h2 className="font-headline-md text-primary">Lumina</h2>
+          <p className="font-label-sm text-[#e5e2e1]-variant">Payment Receipt</p>
         </div>
 
-        <div className="border-t border-outline-variant/10 pt-lg space-y-md text-left">
+        <div className="border-t border-[#869486]-variant/10 pt-lg space-y-md text-left">
           <div className="flex justify-between">
-            <span className="text-on-surface-variant font-label-sm">Transaction Code</span>
+            <span className="text-[#e5e2e1]-variant font-label-sm">Transaction Code</span>
             <span className="font-label-md text-primary">{tx.kode_transaksi}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-on-surface-variant font-label-sm">Type</span>
+            <span className="text-[#e5e2e1]-variant font-label-sm">Type</span>
             <span className="font-label-md capitalize">{tx.tipe}</span>
           </div>
           {tx.nama_pelanggan && (
             <div className="flex justify-between">
-              <span className="text-on-surface-variant font-label-sm">Customer</span>
+              <span className="text-[#e5e2e1]-variant font-label-sm">Customer</span>
               <span className="font-label-md">{tx.nama_pelanggan}</span>
             </div>
           )}
           {tx.payment_method && (
             <div className="flex justify-between">
-              <span className="text-on-surface-variant font-label-sm">Payment</span>
+              <span className="text-[#e5e2e1]-variant font-label-sm">Payment</span>
               <span className={`font-label-md uppercase tracking-wider ${tx.payment_method === 'qris' ? 'text-secondary' : 'text-primary'}`}>
                 {tx.payment_method === 'qris' ? 'QRIS' : 'CASH'}
               </span>
@@ -63,7 +63,7 @@ export default function ReceiptPage() {
           )}
         </div>
 
-        <div className="border-t border-outline-variant/10 pt-lg mt-lg">
+        <div className="border-t border-[#869486]-variant/10 pt-lg mt-lg">
           <div className="flex justify-between items-center">
             <span className="font-headline-md">Total</span>
             <span className="font-headline-lg text-primary">Rp {total.toLocaleString('id-ID')}</span>
@@ -71,7 +71,7 @@ export default function ReceiptPage() {
         </div>
 
         {tx.status === 'aktif' && (
-          <div className="mt-lg p-md bg-secondary/10 rounded-xl">
+          <div className="mt-lg p-4 bg-secondary/10 rounded-xl">
             <p className="font-label-md text-secondary">Payment pending</p>
           </div>
         )}
