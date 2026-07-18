@@ -14,30 +14,25 @@ export default function CategoriesPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex justify-center"><span className="material-symbols-outlined text-primary text-6xl animate-pulse">category</span></div>;
+  if (loading) return <div className="flex justify-center py-20"><span className="material-symbols-outlined text-green-400 text-5xl animate-pulse">category</span></div>;
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-lg">
-        <div>
-          <h2 className="font-headline-md text-[#e5e2e1]">Categories</h2>
-          <p className="font-label-sm text-[#e5e2e1]-variant">Manage product categories</p>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-semibold font-[Montserrat] text-gray-200">Categories</h2>
+        <p className="text-gray-400 text-sm mt-1">Manage product categories</p>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-lg">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.map(cat => (
-          <div key={cat.id} className="glass-card p-6 rounded-xl glow-hover transition-all">
-            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-lg">
-              <span className="material-symbols-outlined text-primary">category</span>
+          <div key={cat.id} className="glass-card p-6 rounded-xl hover:shadow-[0_0_20px_0_rgba(107,251,154,0.15)] transition-shadow">
+            <div className="w-12 h-12 bg-green-400/10 rounded-xl flex items-center justify-center mb-4">
+              <span className="material-symbols-outlined text-green-400">category</span>
             </div>
-            <h3 className="font-headline-md text-[#e5e2e1] mb-xs">{cat.name}</h3>
-            {cat.description && (
-              <p className="font-label-sm text-[#e5e2e1]-variant">{cat.description}</p>
-            )}
+            <h3 className="text-lg font-semibold font-[Montserrat] text-gray-200 mb-1">{cat.name}</h3>
+            {cat.description && <p className="text-sm text-gray-400">{cat.description}</p>}
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }

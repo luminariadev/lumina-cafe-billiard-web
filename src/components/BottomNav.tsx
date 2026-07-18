@@ -29,7 +29,7 @@ export default function BottomNav() {
             className={`flex flex-col items-center justify-center rounded-full px-3 py-1 active:scale-90 duration-200 ${
               isActive
                 ? 'bg-primary-container text-on-primary-container'
-                : 'text-[#e5e2e1]-variant hover:text-primary'
+                : 'text-gray-200-variant hover:text-primary'
             }`}
           >
             <span className="material-symbols-outlined">{icon}</span>

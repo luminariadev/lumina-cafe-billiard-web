@@ -9,47 +9,42 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([getProducts(), getCategories()])
-      .then(([p, c]) => {
-        setProducts(p || []);
-        setCategories(c || []);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    Promise.all([getProducts(), getCategories()]).then(([p, c]) => {
+      setProducts(p || []);
+      setCategories(c || []);
+    }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex justify-center"><span className="material-symbols-outlined text-primary text-6xl animate-pulse">inventory_2</span></div>;
+  if (loading) return <div className="flex justify-center py-20"><span className="material-symbols-outlined text-green-400 text-5xl animate-pulse">inventory_2</span></div>;
 
   const categoryMap = Object.fromEntries(categories.map(c => [c.id, c.name]));
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-lg">
-        <div>
-          <h2 className="font-headline-md text-[#e5e2e1]">Products</h2>
-          <p className="font-label-sm text-[#e5e2e1]-variant">Manage your cafe & billiard products</p>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-semibold font-[Montserrat] text-gray-200">Products</h2>
+        <p className="text-gray-400 text-sm mt-1">Manage your cafe & billiard products</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-lg">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {products.map(p => (
-          <div key={p.id} className="glass-card rounded-xl p-6 glow-hover transition-all">
-            <div className="w-full h-32 bg-[#201f1f]-highest rounded-lg flex items-center justify-center mb-lg">
-              <span className="material-symbols-outlined text-4xl text-[#e5e2e1]-variant/30">
+          <div key={p.id} className="glass-card rounded-xl overflow-hidden hover:shadow-[0_0_20px_0_rgba(107,251,154,0.15)] transition-shadow">
+            <div className="h-32 bg-gray-900 flex items-center justify-center">
+              <span className="material-symbols-outlined text-5xl text-gray-600">
                 {p.product_type === 'makanan' ? 'restaurant' : 'local_cafe'}
               </span>
             </div>
-            <h3 className="font-headline-md text-[#e5e2e1] mb-xs">{p.name}</h3>
-            <p className="font-label-sm text-[#e5e2e1]-variant mb-lg">{categoryMap[p.category_id] || '-'}</p>
-            <div className="flex justify-between items-center">
-              <span className="font-bold text-primary text-headline-md">Rp {parseInt(p.price).toLocaleString('id-ID')}</span>
-              <span className={`font-label-sm ${p.stock > 5 ? 'text-[#e5e2e1]-variant' : 'text-error'}`}>
-                Stock: {p.stock}
-              </span>
+            <div className="p-5 space-y-2">
+              <h3 className="text-lg font-semibold font-[Montserrat] text-gray-200">{p.name}</h3>
+              <p className="text-sm text-gray-400">{categoryMap[p.category_id] || '-'}</p>
+              <div className="flex justify-between items-center pt-2">
+                <span className="font-bold text-green-400 text-xl">Rp {parseInt(p.price).toLocaleString('id-ID')}</span>
+                <span className={`text-xs font-medium ${p.stock > 5 ? 'text-gray-400' : 'text-red-400'}`}>Stock: {p.stock}</span>
+              </div>
             </div>
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }

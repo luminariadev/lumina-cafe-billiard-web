@@ -3,102 +3,64 @@
 import { useState, useEffect } from 'react';
 import { getReports, ReportData } from '@/lib/api';
 
+function StatCard({ label, value, icon, color }: { label: string; value: string | number; icon: string; color: string }) {
+  const clr = color === 'amber' ? 'text-amber-400 bg-amber-400/10' : color === 'yellow' ? 'text-yellow-400 bg-yellow-400/10' : 'text-green-400 bg-green-400/10';
+  return (
+    <div className="glass-card p-6 rounded-xl hover:shadow-[0_0_20px_0_rgba(107,251,154,0.15)] transition-shadow">
+      <div className={`p-2 ${clr} rounded-lg w-fit mb-3`}>
+        <span className="material-symbols-outlined text-lg">{icon}</span>
+      </div>
+      <p className="text-sm text-gray-400">{label}</p>
+      <h3 className="text-3xl font-bold font-[Montserrat] text-green-400 mt-1">{value}</h3>
+    </div>
+  );
+}
+
 export default function ReportsPage() {
   const [report, setReport] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getReports()
-      .then(setReport)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    getReports().then(setReport).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex justify-center"><span className="material-symbols-outlined text-primary text-6xl animate-pulse">sports_bar</span></div>;
+  if (loading) return <div className="flex justify-center py-20"><span className="material-symbols-outlined text-green-400 text-5xl animate-pulse">bar_chart</span></div>;
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-lg">
-        <div>
-          <h2 className="font-headline-md text-[#e5e2e1]">Reports & Analytics</h2>
-          <p className="font-label-sm text-[#e5e2e1]-variant">Performance overview of billiard & cafe operations</p>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-semibold font-[Montserrat] text-gray-200">Reports & Analytics</h2>
+        <p className="text-gray-400 text-sm mt-1">Performance overview of billiard & cafe operations</p>
       </div>
 
-      {/* Revenue Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-lg">
-        <div className="glass-card p-6 rounded-xl glow-hover transition-all">
-          <div className="flex justify-between items-start mb-md">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <span className="material-symbols-outlined text-primary">payments</span>
-            </div>
-            <span className="text-primary font-bold font-label-sm text-label-sm">Today</span>
-          </div>
-          <p className="font-label-md text-label-md text-[#e5e2e1]-variant">Today Revenue</p>
-          <h3 className="font-headline-lg text-headline-lg text-[#e5e2e1] mt-xs">Rp {(report?.today_revenue || 0).toLocaleString('id-ID')}</h3>
-        </div>
-        <div className="glass-card p-6 rounded-xl glow-hover transition-all">
-          <div className="flex justify-between items-start mb-md">
-            <div className="p-2 bg-secondary/10 rounded-lg">
-              <span className="material-symbols-outlined text-secondary">calendar_month</span>
-            </div>
-            <span className="text-secondary font-bold font-label-sm text-label-sm">Month</span>
-          </div>
-          <p className="font-label-md text-label-md text-[#e5e2e1]-variant">Monthly Revenue</p>
-          <h3 className="font-headline-lg text-headline-lg text-[#e5e2e1] mt-xs">Rp {(report?.monthly_revenue || 0).toLocaleString('id-ID')}</h3>
-        </div>
-        <div className="glass-card p-6 rounded-xl glow-hover transition-all">
-          <div className="flex justify-between items-start mb-md">
-            <div className="p-2 bg-tertiary/10 rounded-lg">
-              <span className="material-symbols-outlined text-tertiary">receipt_long</span>
-            </div>
-            <span className="text-tertiary font-bold font-label-sm text-label-sm">Today</span>
-          </div>
-          <p className="font-label-md text-label-md text-[#e5e2e1]-variant">Transactions Today</p>
-          <h3 className="font-headline-lg text-headline-lg text-[#e5e2e1] mt-xs">{report?.today_transactions || 0}</h3>
-        </div>
-        <div className="glass-card p-6 rounded-xl glow-hover transition-all">
-          <div className="flex justify-between items-start mb-md">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <span className="material-symbols-outlined text-primary">assessment</span>
-            </div>
-            <span className="text-primary font-bold font-label-sm text-label-sm">Month</span>
-          </div>
-          <p className="font-label-md text-label-md text-[#e5e2e1]-variant">Monthly Transactions</p>
-          <h3 className="font-headline-lg text-headline-lg text-[#e5e2e1] mt-xs">{report?.monthly_transactions || 0}</h3>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard label="Today Revenue" value={`Rp ${(report?.today_revenue || 0).toLocaleString('id-ID')}`} icon="payments" color="green" />
+        <StatCard label="Monthly Revenue" value={`Rp ${(report?.monthly_revenue || 0).toLocaleString('id-ID')}`} icon="calendar_month" color="amber" />
+        <StatCard label="Transactions Today" value={report?.today_transactions || 0} icon="receipt_long" color="yellow" />
+        <StatCard label="Monthly Transactions" value={report?.monthly_transactions || 0} icon="assessment" color="green" />
       </div>
 
-      {/* Best Sellers */}
-      <div className="glass-card rounded-xl p-lg">
-        <h4 className="font-headline-md text-[#e5e2e1] mb-lg">Best Selling Products</h4>
+      <div className="glass-card rounded-xl p-6">
+        <h4 className="text-lg font-semibold font-[Montserrat] text-gray-200 mb-4">Best Selling Products</h4>
         {report?.best_sellers && report.best_sellers.length > 0 ? (
-          <div className="space-y-md">
-            {report.best_sellers.map((item, idx) => (
-              <div key={item.name} className="flex items-center gap-6 p-4 rounded-lg bg-[#1c1b1b] border border-[#869486]-variant/10 hover:bg-[#201f1f]-high transition-colors">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
-                  idx === 0 ? 'bg-tertiary/20 text-tertiary' :
-                  idx === 1 ? 'bg-[#201f1f]-highest text-[#e5e2e1]-variant' :
-                  'bg-[#201f1f]-highest text-[#e5e2e1]-variant'
-                }`}>
-                  {idx === 0 ? <span className="material-symbols-outlined text-tertiary">emoji_events</span> : idx + 1}
+          <div className="space-y-3">
+            {report.best_sellers.map((item: any, idx: number) => (
+              <div key={item.name} className="flex items-center gap-4 p-4 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${idx === 0 ? 'bg-yellow-400/20 text-yellow-400' : 'bg-gray-700 text-gray-300'}`}>
+                  {idx === 0 ? <span className="material-symbols-outlined text-yellow-400">emoji_events</span> : idx + 1}
                 </div>
                 <div className="flex-1">
-                  <p className="font-label-md text-[#e5e2e1]">{item.name}</p>
-                  <p className="font-label-sm text-[#e5e2e1]-variant">{item.quantity} items sold</p>
+                  <p className="text-sm font-medium text-gray-200">{item.name}</p>
+                  <p className="text-xs text-gray-400">{item.quantity} items sold</p>
                 </div>
-                <div className="text-right">
-                  <span className="font-label-md text-primary">{item.quantity}x</span>
-                </div>
+                <span className="text-sm font-bold text-green-400">{item.quantity}x</span>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-xl text-[#e5e2e1]-variant font-label-md">
-            No sales data yet. Start by creating transactions.
-          </div>
+          <div className="text-center py-12 text-gray-400 text-sm">No sales data yet.</div>
         )}
       </div>
-    </>
+    </div>
   );
 }

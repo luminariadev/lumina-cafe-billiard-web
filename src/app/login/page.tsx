@@ -8,67 +8,87 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
     try {
       await login(username, password);
-      // Redirect handled by AuthContext
+      router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="glass-card w-full max-w-md p-8 rounded-2xl text-[#e5e2e1] text-center shadow-lg">
-        <div className="mb-8">
-          <h1 className="font-headline-lg text-primary text-4xl font-black mb-2">Lumina</h1>
-          <p className="text-[#e5e2e1]-variant text-lg">Management Portal</p>
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="glass-card w-full max-w-md p-8 rounded-2xl text-center shadow-2xl">
+        {/* Logo */}
+        <div className="w-16 h-16 bg-green-400/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <span className="material-symbols-outlined text-green-400 text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>sports_bar</span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-left text-label-md text-[#e5e2e1]-variant mb-2" htmlFor="username">
-              Username
-            </label>
+        <h1 className="text-3xl font-bold font-[Montserrat] text-green-400 mb-1">Lumina</h1>
+        <p className="text-gray-400 text-base mb-8">Management Portal</p>
+
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl mb-4">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="text-left">
+            <label className="block text-gray-400 text-sm font-medium mb-2" htmlFor="username">Username</label>
             <input
-              type="text"
               id="username"
-              className="w-full p-4 rounded-xl bg-[#1c1b1b] border border-[#869486]-variant/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-body-md"
-              placeholder="Enter your username"
+              type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              className="w-full p-4 rounded-xl bg-gray-900 border border-gray-700/30 focus:border-green-400 focus:ring-1 focus:ring-green-400 outline-none transition-all text-gray-200 placeholder-gray-600"
+              placeholder="Enter username..."
               required
-            />
-          </div>
-          <div>
-            <label className="block text-left text-label-md text-[#e5e2e1]-variant mb-2" htmlFor="password">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              className="w-full p-4 rounded-xl bg-[#1c1b1b] border border-[#869486]-variant/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-body-md"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+              autoComplete="username"
             />
           </div>
 
-          {error && <p className="text-error text-label-md text-center">{error}</p>}
+          <div className="text-left">
+            <label className="block text-gray-400 text-sm font-medium mb-2" htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-4 rounded-xl bg-gray-900 border border-gray-700/30 focus:border-green-400 focus:ring-1 focus:ring-green-400 outline-none transition-all text-gray-200 placeholder-gray-600"
+              placeholder="Enter password..."
+              required
+              autoComplete="current-password"
+            />
+          </div>
 
           <button
             type="submit"
-            className="w-full bg-primary text-on-primary font-bold py-4 rounded-xl text-headline-md shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all duration-200"
+            disabled={loading}
+            className="w-full py-4 bg-green-400 text-black font-bold rounded-xl active:scale-95 transition-all shadow-lg shadow-green-400/20 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Login
+            {loading ? (
+              <>
+                <span className="material-symbols-outlined animate-spin text-lg">sync</span>
+                Signing in...
+              </>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
+
+        <p className="text-gray-600 text-xs mt-6">Billiard & Cafe Management System</p>
       </div>
     </div>
   );

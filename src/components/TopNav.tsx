@@ -1,198 +1,107 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { usePathname } from 'next/navigation';
-import Sidebar from './Sidebar';
+import { usePathname, useRouter } from 'next/navigation';
 
 const PAGE_TITLES: Record<string, string> = {
-  '/dashboard': 'Overview',
-  '/meja': 'Billiards',
-  '/pos': 'Cafe POS',
-  '/products': 'Products',
-  '/categories': 'Categories',
+  '/dashboard': 'Dashboard',
+  '/meja': 'Billiard Tables',
+  '/pos': 'Point of Sale',
   '/transaksis': 'Transactions',
   '/reports': 'Reports',
-  '/settings': 'Settings',
+  '/products': 'Products',
+  '/categories': 'Categories',
 };
 
-export default function TopNav() {
-  const { user } = useAuth();
+export default function MainTopNav() {
+  const { user, logout } = useAuth();
   const pathname = usePathname();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const router = useRouter();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   const pageTitle = PAGE_TITLES[pathname] || 'Lumina';
 
-  if (!user) return null;
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   return (
-    <>
-      <Sidebar />
-      <MobileNav
-        isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        title={pageTitle}
-      />
-    </>
-  );
-}
-
-function MobileNav({ isOpen, onClose, title }: { isOpen: boolean; onClose: () => void; title: string }) {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-[60] md:hidden">
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      {/* Menu content */}
-      <aside className="absolute left-0 top-0 h-full w-72 bg-[#1c1b1b] flex flex-col py-lg px-md shadow-2xl">
-        {/* Brand */}
-        <div className="mb-xl flex items-center gap-sm">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-            <span className="material-symbols-outlined text-on-primary" style={{ fontVariationSettings: "'FILL' 1" }}>sports_bar</span>
+    <header className="sticky top-0 z-20 bg-black/80 backdrop-blur-xl border-b border-gray-800">
+      <div className="flex items-center justify-between px-6 py-4">
+        {/* Mobile logo */}
+        <div className="flex md:hidden items-center gap-3">
+          <div className="w-8 h-8 bg-green-400/10 rounded-lg flex items-center justify-center">
+            <span className="material-symbols-outlined text-green-400 text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>sports_bar</span>
           </div>
-          <div>
-            <h1 className="font-headline-md text-primary font-black leading-none">Lumina</h1>
-            <p className="font-label-sm text-[#e5e2e1]-variant">Management Portal</p>
-          </div>
+          <h1 className="text-lg font-bold font-[Montserrat] text-green-400">Lumina</h1>
         </div>
-        {/* Links */}
-        <nav className="flex-1 space-y-xs">
-          {Object.entries(PAGE_TITLES).map(([path, label]) => (
-            <a
-              key={path}
-              href={path}
-              className="flex items-center gap-4 p-4 rounded-lg text-[#e5e2e1]-variant font-medium hover:bg-[#201f1f]-high hover:text-primary transition-colors"
-            >
-              <span className="material-symbols-outlined">
-                {path === '/dashboard' ? 'dashboard' :
-                 path === '/meja' ? 'sports_bar' :
-                 path === '/pos' ? 'coffee' :
-                 path === '/products' ? 'inventory_2' :
-                 path === '/categories' ? 'category' :
-                 path === '/transaksis' ? 'receipt_long' :
-                 path === '/reports' ? 'assessment' :
-                 path === '/settings' ? 'settings' : 'circle'}
-              </span>
-              <span className="font-label-md">{label}</span>
-            </a>
-          ))}
-        </nav>
-      </aside>
-    </div>
-  );
-}
 
-export function MainTopNav() {
-  const { user } = useAuth();
-  const pathname = usePathname();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+        {/* Page title - desktop */}
+        <h2 className="text-lg font-semibold font-[Montserrat] text-green-400 hidden md:block">{pageTitle}</h2>
 
-  const pageTitle = PAGE_TITLES[pathname] || 'Lumina';
-
-  if (!user) return null;
-
-  return (
-    <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-[#869486]-variant/10 shadow-sm">
-      <div className="flex justify-between items-center w-full px-lg py-md max-w-[1440px] mx-auto">
-        <div className="flex items-center gap-md">
+        {/* Right side */}
+        <div className="flex items-center gap-3">
+          {/* Search toggle */}
           <button
-            className="md:hidden text-[#e5e2e1] p-2 hover:bg-[#201f1f]-high rounded-lg"
-            onClick={() => setMobileMenuOpen(true)}
+            onClick={() => setShowSearch(!showSearch)}
+            className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-all"
           >
-            <span className="material-symbols-outlined">menu</span>
+            <span className="material-symbols-outlined">search</span>
           </button>
-          <h2 className="font-headline-md text-primary font-black hidden md:block">{pageTitle}</h2>
-        </div>
-        <div className="flex-1 max-w-xl mx-lg hidden sm:block">
-          <div className="relative group">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#e5e2e1]-variant group-focus-within:text-primary transition-colors">search</span>
-            <input
-              className="w-full bg-[#1c1b1b]est border-[#869486]-variant/30 focus:border-primary focus:ring-1 focus:ring-primary rounded-full py-2 pl-12 pr-4 text-body-md transition-all outline-none text-[#e5e2e1] placeholder-on-surface-variant"
-              placeholder="Search tables, orders, or members..."
-              type="text"
-            />
-          </div>
-        </div>
-        <div className="flex items-center gap-md">
-          <button className="p-2 rounded-full hover:bg-[#201f1f] text-[#e5e2e1]-variant relative">
+
+          {/* Notifications */}
+          <button className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-all relative">
             <span className="material-symbols-outlined">notifications</span>
-            <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-green-400 rounded-full"></span>
           </button>
-          <button className="p-2 rounded-full hover:bg-[#201f1f] text-[#e5e2e1]-variant">
-            <span className="material-symbols-outlined">help_outline</span>
-          </button>
+
+          {/* User menu */}
+          <div className="relative">
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center gap-2 p-2 hover:bg-gray-800 rounded-lg transition-all"
+            >
+              <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
+                <span className="material-symbols-outlined text-gray-300 text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>account_circle</span>
+              </div>
+              <span className="material-symbols-outlined text-gray-400 text-sm hidden sm:block">
+                {showUserMenu ? 'expand_less' : 'expand_more'}
+              </span>
+            </button>
+
+            {showUserMenu && (
+              <div className="absolute right-0 top-full mt-2 w-48 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-800">
+                  <p className="text-sm font-medium text-gray-200">{user?.name || 'User'}</p>
+                  <p className="text-xs text-gray-500 capitalize">{user?.role?.replace('_', ' ') || 'Staff'}</p>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-red-400 transition-all text-sm"
+                >
+                  <span className="material-symbols-outlined text-lg">logout</span>
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Mobile Sidebar */}
-      {mobileMenuOpen && (
-        <MobileSidebar onClose={() => setMobileMenuOpen(false)} />
+      {/* Search bar */}
+      {showSearch && (
+        <div className="px-6 pb-4">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-xl text-gray-200 placeholder-gray-500 outline-none focus:border-green-400 transition-colors"
+            autoFocus
+          />
+        </div>
       )}
     </header>
-  );
-}
-
-function MobileSidebar({ onClose }: { onClose: () => void }) {
-  const { user, logout } = useAuth();
-
-  return (
-    <div className="fixed inset-0 z-[70] md:hidden">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <aside className="absolute left-0 top-0 h-full w-72 bg-[#1c1b1b] flex flex-col py-lg px-md shadow-2xl">
-        <div className="mb-xl flex items-center justify-between">
-          <div className="flex items-center gap-sm">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <span className="material-symbols-outlined text-on-primary" style={{ fontVariationSettings: "'FILL' 1" }}>sports_bar</span>
-            </div>
-            <div>
-              <h1 className="font-headline-md text-primary font-black leading-none">Lumina</h1>
-              <p className="font-label-sm text-[#e5e2e1]-variant">Management Portal</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-2 hover:bg-[#201f1f]-high rounded-lg">
-            <span className="material-symbols-outlined">close</span>
-          </button>
-        </div>
-        <nav className="flex-1 space-y-xs overflow-y-auto custom-scrollbar">
-          {Object.entries(PAGE_TITLES).map(([path, label]) => (
-            <a
-              key={path}
-              href={path}
-              className="flex items-center gap-4 p-4 rounded-lg text-[#e5e2e1]-variant font-medium hover:bg-[#201f1f]-high hover:text-primary transition-colors"
-            >
-              <span className="material-symbols-outlined">
-                {path === '/dashboard' ? 'dashboard' :
-                 path === '/meja' ? 'sports_bar' :
-                 path === '/pos' ? 'coffee' :
-                 path === '/products' ? 'inventory_2' :
-                 path === '/categories' ? 'category' :
-                 path === '/transaksis' ? 'receipt_long' :
-                 path === '/reports' ? 'assessment' :
-                 path === '/settings' ? 'settings' : 'circle'}
-              </span>
-              <span className="font-label-md">{label}</span>
-            </a>
-          ))}
-        </nav>
-        <div className="mt-auto border-t border-[#869486]-variant/10 pt-md space-y-xs">
-          <div className="flex items-center gap-4 p-md">
-            <div className="w-10 h-10 rounded-full bg-[#201f1f]-highest overflow-hidden">
-              <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
-                {user?.name?.charAt(0) || 'U'}
-              </div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-label-md text-[#e5e2e1] truncate">{user?.name || 'User'}</p>
-              <p className="font-label-sm text-[#e5e2e1]-variant truncate">{user?.role}</p>
-            </div>
-          </div>
-          <button onClick={logout} className="flex items-center gap-4 p-4 rounded-lg text-[#e5e2e1]-variant font-medium hover:bg-[#201f1f]-high hover:text-error transition-colors w-full">
-            <span className="material-symbols-outlined">logout</span>
-            <span className="font-label-md">Logout</span>
-          </button>
-        </div>
-      </aside>
-    </div>
   );
 }
