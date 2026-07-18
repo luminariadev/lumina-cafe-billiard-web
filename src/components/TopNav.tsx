@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Sidebar from './Sidebar';
 
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -20,6 +22,7 @@ export default function MainTopNav() {
   const router = useRouter();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const pageTitle = PAGE_TITLES[pathname] || 'Lumina';
 
@@ -29,79 +32,95 @@ export default function MainTopNav() {
   };
 
   return (
-    <header className="sticky top-0 z-20 bg-black/80 backdrop-blur-xl border-b border-gray-800">
-      <div className="flex items-center justify-between px-6 py-4">
-        {/* Mobile logo */}
-        <div className="flex md:hidden items-center gap-3">
-          <div className="w-8 h-8 bg-green-400/10 rounded-lg flex items-center justify-center">
-            <span className="material-symbols-outlined text-green-400 text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>sports_bar</span>
+    <>
+      {/* Mobile Sidebar Overlay */}
+      {showSidebar && (
+        <div className="md:hidden fixed inset-0 z-40">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSidebar(false)}></div>
+          <div className="absolute left-0 top-0 bottom-0 w-72 transition-transform">
+            <Sidebar onClose={() => setShowSidebar(false)} />
           </div>
-          <h1 className="text-lg font-bold font-[Montserrat] text-green-400">Lumina</h1>
-        </div>
-
-        {/* Page title - desktop */}
-        <h2 className="text-lg font-semibold font-[Montserrat] text-green-400 hidden md:block">{pageTitle}</h2>
-
-        {/* Right side */}
-        <div className="flex items-center gap-3">
-          {/* Search toggle */}
-          <button
-            onClick={() => setShowSearch(!showSearch)}
-            className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-all"
-          >
-            <span className="material-symbols-outlined">search</span>
-          </button>
-
-          {/* Notifications */}
-          <button className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-all relative">
-            <span className="material-symbols-outlined">notifications</span>
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-green-400 rounded-full"></span>
-          </button>
-
-          {/* User menu */}
-          <div className="relative">
-            <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-2 p-2 hover:bg-gray-800 rounded-lg transition-all"
-            >
-              <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
-                <span className="material-symbols-outlined text-gray-300 text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>account_circle</span>
-              </div>
-              <span className="material-symbols-outlined text-gray-400 text-sm hidden sm:block">
-                {showUserMenu ? 'expand_less' : 'expand_more'}
-              </span>
-            </button>
-
-            {showUserMenu && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden">
-                <div className="px-4 py-3 border-b border-gray-800">
-                  <p className="text-sm font-medium text-gray-200">{user?.name || 'User'}</p>
-                  <p className="text-xs text-gray-500 capitalize">{user?.role?.replace('_', ' ') || 'Staff'}</p>
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-red-400 transition-all text-sm"
-                >
-                  <span className="material-symbols-outlined text-lg">logout</span>
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Search bar */}
-      {showSearch && (
-        <div className="px-6 pb-4">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-xl text-gray-200 placeholder-gray-500 outline-none focus:border-green-400 transition-colors"
-            autoFocus
-          />
         </div>
       )}
-    </header>
+
+      <header className="sticky top-0 z-20 bg-black/80 backdrop-blur-xl border-b border-gray-800">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+          {/* Mobile hamburger + logo */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => setShowSidebar(true)}
+              className="md:hidden p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-all"
+            >
+              <span className="material-symbols-outlined">menu</span>
+            </button>
+            <div className="flex md:hidden items-center gap-2">
+              <div className="w-8 h-8 bg-green-400/10 rounded-lg flex items-center justify-center">
+                <span className="material-symbols-outlined text-green-400 text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>sports_bar</span>
+              </div>
+              <h1 className="text-lg font-bold font-[Montserrat] text-green-400">Lumina</h1>
+            </div>
+          </div>
+
+          {/* Page title - desktop */}
+          <h2 className="text-lg font-semibold font-[Montserrat] text-green-400 hidden md:block">{pageTitle}</h2>
+
+          {/* Right side */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            <button
+              onClick={() => setShowSearch(!showSearch)}
+              className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-all"
+            >
+              <span className="material-symbols-outlined">search</span>
+            </button>
+
+            <button className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-all relative">
+              <span className="material-symbols-outlined">notifications</span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-green-400 rounded-full"></span>
+            </button>
+
+            <div className="relative">
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="flex items-center gap-2 p-2 hover:bg-gray-800 rounded-lg transition-all"
+              >
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gray-700 rounded-full flex items-center justify-center">
+                  <span className="material-symbols-outlined text-gray-300 text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>account_circle</span>
+                </div>
+                <span className="material-symbols-outlined text-gray-400 text-sm hidden sm:block">
+                  {showUserMenu ? 'expand_less' : 'expand_more'}
+                </span>
+              </button>
+
+              {showUserMenu && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
+                  <div className="px-4 py-3 border-b border-gray-800">
+                    <p className="text-sm font-medium text-gray-200">{user?.name || 'User'}</p>
+                    <p className="text-xs text-gray-500 capitalize">{user?.role?.replace('_', ' ') || 'Staff'}</p>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-red-400 transition-all text-sm"
+                  >
+                    <span className="material-symbols-outlined text-lg">logout</span>
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {showSearch && (
+          <div className="px-4 sm:px-6 pb-3 sm:pb-4">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-xl text-gray-200 placeholder-gray-500 outline-none focus:border-green-400 transition-colors"
+              autoFocus
+            />
+          </div>
+        )}
+      </header>
+    </>
   );
 }

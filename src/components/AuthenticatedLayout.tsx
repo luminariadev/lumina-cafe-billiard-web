@@ -36,15 +36,17 @@ export default function AuthenticatedLayout({ children }: { children: React.Reac
   if (!user) return null;
 
   return (
-    <div className="min-h-screen flex">
-      <Sidebar />
-      <main className="md:ml-64 min-h-screen flex flex-col flex-1">
-        <MainTopNav />
-        <div className="p-6 max-w-[1440px] mx-auto w-full space-y-6">
-          {children}
-        </div>
-        <BottomNav />
-      </main>
+    <div className="min-h-screen bg-black">
+      <div className="flex">
+        <Sidebar />
+        <main className="flex-1 min-w-0 md:ml-64 flex flex-col min-h-screen">
+          <MainTopNav />
+          <div className="flex-1 px-4 sm:px-6 py-4 sm:py-6 w-full max-w-[1440px] mx-auto pb-24 md:pb-6">
+            {children}
+          </div>
+          <BottomNav />
+        </main>
+      </div>
     </div>
   );
 }
