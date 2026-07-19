@@ -15,7 +15,6 @@ const ROLE_NAV: Record<string, { href: string; icon: string; label: string }[]> 
     { href: '/transaksis', icon: 'receipt_long', label: 'Transaksi' },
     { href: '/reports', icon: 'bar_chart', label: 'Reports' },
     { href: '/products', icon: 'inventory_2', label: 'Produk' },
-    { href: '/categories', icon: 'category', label: 'Kategori' },
   ],
   kasir_billiard: [
     { href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
@@ -37,7 +36,6 @@ const PAGE_TITLES: Record<string, string> = {
   '/transaksis': 'Transactions',
   '/reports': 'Reports',
   '/products': 'Products',
-  '/categories': 'Categories',
 };
 
 export default function TopNav() {

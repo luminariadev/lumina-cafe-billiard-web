@@ -41,7 +41,6 @@ const ROLE_NAV: Record<string, { href: string; icon: string; label: string }[]> 
     { href: '/transaksis', icon: 'receipt_long', label: 'Transactions' },
     { href: '/reports', icon: 'bar_chart', label: 'Reports' },
     { href: '/products', icon: 'inventory_2', label: 'Products' },
-    { href: '/categories', icon: 'category', label: 'Categories' },
   ],
   kasir_billiard: [
     { href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
