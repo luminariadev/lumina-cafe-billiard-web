@@ -160,4 +160,4 @@ export const getReports = () =>
   request<ReportData>("/reports");
 
 // Report
-export const getReport = () => request("/transaksis/report");
+export const getTransactionsReport = () => request("/transaksis/report");

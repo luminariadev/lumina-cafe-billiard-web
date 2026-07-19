@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { getReports, getTransaksis } from '@/lib/api';
+import { getReports, getTransaksis, getTransactionsReport } from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 function StatCard({ value, label }: { value: string | number; label: string }) {
   return (
@@ -15,6 +16,7 @@ function StatCard({ value, label }: { value: string | number; label: string }) {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [report, setReport] = useState<any | null>(null);
   const [recentTransaksis, setRecentTransaksis] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,12 +26,15 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         const results = await Promise.allSettled([
-          getReports(),
+          getReports(), // Ini harusnya report summary, bukan report transaksi
           getTransaksis(),
         ]);
 
         if (results[0].status === 'fulfilled') {
           setReport(results[0].value);
+        } else if (results[0].status === 'rejected' && results[0].reason.message.includes("HTTP 401")) {
+          router.push('/login');
+          return;
         } else {
           console.error('Reports fetch failed:', results[0].reason);
         }
@@ -37,6 +42,9 @@ export default function DashboardPage() {
         if (results[1].status === 'fulfilled') {
           const data = results[1].value;
           setRecentTransaksis(Array.isArray(data) ? data.slice(0, 5) : []);
+        } else if (results[1].status === 'rejected' && results[1].reason.message.includes("HTTP 401")) {
+          router.push('/login');
+          return;
         } else {
           console.error('Transaksis fetch failed:', results[1].reason);
           setError('Failed to load some data');
@@ -49,7 +57,7 @@ export default function DashboardPage() {
       }
     };
     fetchData();
-  }, []);
+  }, [router]);
 
   if (loading) {
     return (
