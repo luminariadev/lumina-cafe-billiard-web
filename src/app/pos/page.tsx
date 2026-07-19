@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getProducts, getMejas, Product, Meja, cafePos } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface CartItem {
   productId: number;
@@ -11,7 +12,12 @@ interface CartItem {
 }
 
 export default function PosPage() {
-  const [tab, setTab] = useState<'billiard' | 'cafe'>('cafe');
+  const { user } = useAuth();
+  const role = user?.role ?? 'admin';
+  // Kasir billiard → tab billiard, kasir cafe → tab cafe, admin → default cafe
+  const [tab, setTab] = useState<'billiard' | 'cafe'>(
+    role === 'kasir_billiard' ? 'billiard' : 'cafe'
+  );
   const [products, setProducts] = useState<Product[]>([]);
   const [mejas, setMejas] = useState<Meja[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -73,19 +79,21 @@ export default function PosPage() {
 
   return (
     <div className="space-y-6">
-      {/* Tabs */}
-      <div className="flex gap-4 mb-6">
-        <button onClick={() => setTab('billiard')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all ${
-            tab === 'billiard' ? 'bg-green-400 text-black' : 'bg-gray-800 text-gray-400 hover:text-green-400'}`}>
-          <span className="material-symbols-outlined text-lg">sports_bar</span> Billiards
-        </button>
-        <button onClick={() => setTab('cafe')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all ${
-            tab === 'cafe' ? 'bg-green-400 text-black' : 'bg-gray-800 text-gray-400 hover:text-green-400'}`}>
-          <span className="material-symbols-outlined text-lg">local_cafe</span> Cafe
-        </button>
-      </div>
+      {/* Tabs — hanya tampil jika role punya akses keduanya */}
+      {role !== 'kasir_billiard' && role !== 'kasir_cafe' && (
+        <div className="flex gap-4 mb-6">
+          <button onClick={() => setTab('billiard')}
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all ${
+              tab === 'billiard' ? 'bg-green-400 text-black' : 'bg-gray-800 text-gray-400 hover:text-green-400'}`}>
+            <span className="material-symbols-outlined text-lg">sports_bar</span> Billiards
+          </button>
+          <button onClick={() => setTab('cafe')}
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all ${
+              tab === 'cafe' ? 'bg-green-400 text-black' : 'bg-gray-800 text-gray-400 hover:text-green-400'}`}>
+            <span className="material-symbols-outlined text-lg">local_cafe</span> Cafe
+          </button>
+        </div>
+      )}
 
       {tab === 'billiard' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

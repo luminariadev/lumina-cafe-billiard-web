@@ -4,17 +4,8 @@ import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// ═══════════════════════════════════════════════
-// BottomNav — max 5 items, role-based
-// ═══════════════════════════════════════════════
+// BottomNav — hanya untuk kasir (admin punya sidebar drawer)
 const ROLE_NAV: Record<string, { href: string; icon: string }[]> = {
-  admin: [
-    { href: '/dashboard', icon: 'dashboard' },
-    { href: '/meja', icon: 'sports_bar' },
-    { href: '/pos', icon: 'point_of_sale' },
-    { href: '/transaksis', icon: 'receipt_long' },
-    { href: '/reports', icon: 'assessment' },
-  ],
   kasir_billiard: [
     { href: '/dashboard', icon: 'dashboard' },
     { href: '/meja', icon: 'sports_bar' },
@@ -33,7 +24,11 @@ export default function BottomNav() {
   const pathname = usePathname();
   if (!user) return null;
 
-  const items = ROLE_NAV[user.role] || ROLE_NAV.admin;
+  // Admin tidak pakai bottom nav — pakai sidebar drawer di mobile
+  if (user.role === 'admin') return null;
+
+  const items = ROLE_NAV[user.role];
+  if (!items) return null;
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-gray-900/95 backdrop-blur-md border-t border-gray-800">

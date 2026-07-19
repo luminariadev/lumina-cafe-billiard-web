@@ -104,11 +104,19 @@ export const login = (username: string, password: string) =>
 export const getCategories = () => request<Category[]>("/categories");
 export const createCategory = (data: Partial<Category>) =>
   request<Category>("/categories", { method: "POST", body: JSON.stringify(data) });
+export const updateCategory = (id: number, data: Partial<Category>) =>
+  request<Category>(`/categories/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+export const deleteCategory = (id: number) =>
+  request<void>(`/categories/${id}`, { method: "DELETE" });
 
 // Products
 export const getProducts = () => request<Product[]>("/products");
 export const createProduct = (data: Partial<Product>) =>
   request<Product>("/products", { method: "POST", body: JSON.stringify(data) });
+export const updateProduct = (id: number, data: Partial<Product>) =>
+  request<Product>(`/products/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+export const deleteProduct = (id: number) =>
+  request<void>(`/products/${id}`, { method: "DELETE" });
 
 // Meja
 export const getMejas = () => request<Meja[]>("/mejas");

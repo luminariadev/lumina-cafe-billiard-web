@@ -80,12 +80,15 @@ export default function MejaPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm text-gray-400 block mb-1.5">DURATION</label>
-                  <select className="w-full bg-[#0A0A0A] border border-gray-700/30 rounded-xl p-4 text-gray-200 focus:ring-green-400 outline-none">
-                    <option>30 Minutes</option>
-                    <option selected>1 Hour</option>
-                    <option>2 Hours</option>
-                    <option>3 Hours</option>
-                    <option>Unlimited (Manual Stop)</option>
+                  <select
+                    className="w-full bg-[#0A0A0A] border border-gray-700/30 rounded-xl p-4 text-gray-200 focus:ring-green-400 outline-none"
+                    defaultValue="60"
+                  >
+                    <option value="30">30 Minutes</option>
+                    <option value="60">1 Hour</option>
+                    <option value="120">2 Hours</option>
+                    <option value="180">3 Hours</option>
+                    <option value="unlimited">Unlimited (Manual Stop)</option>
                   </select>
                 </div>
                 <div>

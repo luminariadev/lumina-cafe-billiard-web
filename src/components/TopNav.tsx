@@ -132,14 +132,16 @@ export default function TopNav() {
           ════════════════════════════════════════ */}
       <header className="sticky top-0 z-20 bg-black/80 backdrop-blur-xl border-b border-gray-800">
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger — hanya admin */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => setShowSidebar(true)}
-              className="md:hidden p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-all"
-            >
-              <span className="material-symbols-outlined">menu</span>
-            </button>
+            {user?.role === 'admin' && (
+              <button
+                onClick={() => setShowSidebar(true)}
+                className="md:hidden p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-all"
+              >
+                <span className="material-symbols-outlined">menu</span>
+              </button>
+            )}
             <div className="flex md:hidden items-center gap-2">
               <div className="w-8 h-8 bg-green-400/10 rounded-lg flex items-center justify-center">
                 <span className="material-symbols-outlined text-green-400 text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>sports_bar</span>
