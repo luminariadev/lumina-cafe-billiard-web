@@ -30,6 +30,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# AI agent config files (never allowed as contributors)
+AGENTS.md
+CLAUDE.md
+CURSOR.md
+CLINE.md
+*.cursorrules
+
 # env files (can opt-in for committing if needed)
 .env*
 
