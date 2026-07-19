@@ -8,14 +8,14 @@ export interface User {
   id: number;
   username: string;
   name: string;
-  role: number;
+  role: string; // "admin" | "kasir_billiard" | "kasir_cafe"
   role_label?: string;
 }
 
-const ROLE_MAP: Record<number, string> = {
-  0: 'admin',
-  1: 'kasir_billiard',
-  2: 'kasir_cafe',
+const ROLE_TITLES: Record<string, string> = {
+  admin: 'Admin',
+  kasir_billiard: 'Kasir Billiard',
+  kasir_cafe: 'Kasir Cafe',
 };
 
 interface AuthContextType {
@@ -28,7 +28,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 function enrichUser(u: User): User {
-  return { ...u, role_label: ROLE_MAP[u.role] ?? 'staff' };
+  return { ...u, role_label: ROLE_TITLES[u.role] ?? u.role };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

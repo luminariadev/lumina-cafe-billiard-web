@@ -4,30 +4,29 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { usePathname, useRouter } from 'next/navigation';
 
-const ROLE_NAV: Record<number, { href: string; icon: string; label: string }[]> = {
-  0: [
+// ═══════════════════════════════════════════════
+// Mobile drawer nav items — role-based
+// ═══════════════════════════════════════════════
+const ROLE_NAV: Record<string, { href: string; icon: string; label: string }[]> = {
+  admin: [
     { href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
     { href: '/meja', icon: 'table_restaurant', label: 'Meja' },
-    { href: '/pos', icon: 'point_of_sale', label: 'POS' },
+    { href: '/pos', icon: 'point_of_sale', label: 'POS Billiard' },
     { href: '/transaksis', icon: 'receipt_long', label: 'Transaksi' },
     { href: '/reports', icon: 'bar_chart', label: 'Reports' },
     { href: '/products', icon: 'inventory_2', label: 'Produk' },
     { href: '/categories', icon: 'category', label: 'Kategori' },
   ],
-  1: [
+  kasir_billiard: [
     { href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
     { href: '/meja', icon: 'table_restaurant', label: 'Meja' },
-    { href: '/pos', icon: 'point_of_sale', label: 'POS' },
+    { href: '/pos', icon: 'point_of_sale', label: 'POS Billiard' },
     { href: '/transaksis', icon: 'receipt_long', label: 'Transaksi' },
-    { href: '/reports', icon: 'bar_chart', label: 'Reports' },
   ],
-  2: [
+  kasir_cafe: [
     { href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-    { href: '/pos', icon: 'point_of_sale', label: 'POS Cafe' },
+    { href: '/pos', icon: 'free_breakfast', label: 'POS Cafe' },
     { href: '/transaksis', icon: 'receipt_long', label: 'Transaksi' },
-    { href: '/reports', icon: 'bar_chart', label: 'Reports' },
-    { href: '/products', icon: 'inventory_2', label: 'Produk' },
-    { href: '/categories', icon: 'category', label: 'Kategori' },
   ],
 };
 
@@ -50,19 +49,14 @@ export default function TopNav() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
-  // Tutup sidebar saat resize ke desktop
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth >= 768) setShowSidebar(false);
-  }, []);
-
-  // Tutup sidebar saat pindah halaman
+  // Tutup mobile sidebar saat ganti halaman
   useEffect(() => {
     setShowSidebar(false);
   }, [pathname]);
 
   const pageTitle = PAGE_TITLES[pathname] || 'Lumina';
-  const role = user?.role ?? 0;
-  const navItems = ROLE_NAV[role as number] || ROLE_NAV[0];
+  const role = user?.role ?? 'admin';
+  const navItems = ROLE_NAV[role] || ROLE_NAV.admin;
 
   const handleLogout = () => {
     logout();
@@ -71,17 +65,15 @@ export default function TopNav() {
 
   return (
     <>
-      {/* ═══════════════════════════════════════════════════════════
-          Mobile Sidebar Drawer — full-screen overlay
-          ═══════════════════════════════════════════════════════════ */}
+      {/* ════════════════════════════════════════
+          Mobile drawer
+          ════════════════════════════════════════ */}
       {showSidebar && (
         <div className="md:hidden fixed inset-0 z-50">
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setShowSidebar(false)}
           />
-          {/* Drawer */}
           <div className="absolute left-0 top-0 bottom-0 w-72 bg-black border-r border-gray-800 flex flex-col shadow-2xl">
             {/* Logo */}
             <div className="p-5 border-b border-gray-800 flex items-center gap-3">
@@ -113,7 +105,7 @@ export default function TopNav() {
                 );
               })}
             </nav>
-            {/* User + Logout */}
+            {/* User */}
             <div className="p-4 border-t border-gray-800">
               <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-900">
                 <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
@@ -121,7 +113,7 @@ export default function TopNav() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-200 truncate">{user?.name || 'User'}</p>
-                  <p className="text-xs text-gray-500 capitalize">{user?.role_label || 'Staff'}</p>
+                  <p className="text-xs text-gray-500">{user?.role_label || 'Staff'}</p>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -135,12 +127,12 @@ export default function TopNav() {
         </div>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════
-          Top Header
-          ═══════════════════════════════════════════════════════════ */}
+      {/* ════════════════════════════════════════
+          Top header
+          ════════════════════════════════════════ */}
       <header className="sticky top-0 z-20 bg-black/80 backdrop-blur-xl border-b border-gray-800">
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
-          {/* Mobile hamburger + logo */}
+          {/* Mobile hamburger */}
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setShowSidebar(true)}
@@ -190,7 +182,7 @@ export default function TopNav() {
                 <div className="absolute right-0 top-full mt-2 w-48 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
                   <div className="px-4 py-3 border-b border-gray-800">
                     <p className="text-sm font-medium text-gray-200">{user?.name || 'User'}</p>
-                    <p className="text-xs text-gray-500 capitalize">{user?.role_label || 'Staff'}</p>
+                    <p className="text-xs text-gray-500">{user?.role_label || 'Staff'}</p>
                   </div>
                   <button
                     onClick={handleLogout}

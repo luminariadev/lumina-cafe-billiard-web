@@ -4,7 +4,7 @@ interface User {
   id: number;
   username: string;
   name: string;
-  role: number;
+  role: string;
   role_label?: string;
 }
 

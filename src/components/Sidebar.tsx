@@ -31,40 +31,35 @@ function NavLink({ href, icon, label, onClick }: NavLinkProps) {
 }
 
 // ═══════════════════════════════════════════════
-// Role-based nav items
-// role: 0=admin, 1=kasir_billiard, 2=kasir_cafe
+// Role-based nav items — key = API role string
 // ═══════════════════════════════════════════════
-const ROLE_NAV: Record<number, { href: string; icon: string; label: string }[]> = {
-  0: [
+const ROLE_NAV: Record<string, { href: string; icon: string; label: string }[]> = {
+  admin: [
     { href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
     { href: '/meja', icon: 'table_restaurant', label: 'Billiard Tables' },
-    { href: '/pos', icon: 'point_of_sale', label: 'POS' },
+    { href: '/pos', icon: 'point_of_sale', label: 'POS Billiard' },
     { href: '/transaksis', icon: 'receipt_long', label: 'Transactions' },
     { href: '/reports', icon: 'bar_chart', label: 'Reports' },
     { href: '/products', icon: 'inventory_2', label: 'Products' },
     { href: '/categories', icon: 'category', label: 'Categories' },
   ],
-  1: [
+  kasir_billiard: [
     { href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
     { href: '/meja', icon: 'table_restaurant', label: 'Billiard Tables' },
-    { href: '/pos', icon: 'point_of_sale', label: 'POS' },
+    { href: '/pos', icon: 'point_of_sale', label: 'POS Billiard' },
     { href: '/transaksis', icon: 'receipt_long', label: 'Transactions' },
-    { href: '/reports', icon: 'bar_chart', label: 'Reports' },
   ],
-  2: [
+  kasir_cafe: [
     { href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-    { href: '/pos', icon: 'point_of_sale', label: 'POS Cafe' },
+    { href: '/pos', icon: 'free_breakfast', label: 'POS Cafe' },
     { href: '/transaksis', icon: 'receipt_long', label: 'Transactions' },
-    { href: '/reports', icon: 'bar_chart', label: 'Reports' },
-    { href: '/products', icon: 'inventory_2', label: 'Products' },
-    { href: '/categories', icon: 'category', label: 'Categories' },
   ],
 };
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const { user, logout } = useAuth();
-  const role = user?.role ?? 0;
-  const navItems = ROLE_NAV[role as number] || ROLE_NAV[0];
+  const role = user?.role ?? 'admin';
+  const navItems = ROLE_NAV[role] || ROLE_NAV.admin;
 
   return (
     <aside className="hidden md:flex flex-col w-64 bg-black border-r border-gray-800 h-full md:fixed z-30 overflow-y-auto">
@@ -96,7 +91,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-200 truncate">{user?.name || 'User'}</p>
-            <p className="text-xs text-gray-500 capitalize">{user?.role_label || 'Staff'}</p>
+            <p className="text-xs text-gray-500">{user?.role_label || 'Staff'}</p>
           </div>
           <button
             onClick={logout}
