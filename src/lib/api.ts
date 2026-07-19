@@ -1,11 +1,11 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1";
 
-export interface User {
+interface User {
   id: number;
-  name: string;
   username: string;
-  email: string;
-  role: "admin" | "kasir_billiard" | "kasir_cafe";
+  name: string;
+  role: number;
+  role_label?: string;
 }
 
 export interface LoginResponse {
