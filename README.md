@@ -1,5 +1,8 @@
 # Lumina Cafe Billiard — Web App
 
+[![CI](https://github.com/luminariadev/lumina-cafe-billiard-web/actions/workflows/ci.yml/badge.svg)](https://github.com/luminariadev/lumina-cafe-billiard-web/actions)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits)](https://conventionalcommits.org)
+
 Next.js 16 dashboard untuk admin & kasir. Dark theme dengan neon green (#6bfb9a), role-based navigation, responsive mobile-first.
 
 ---
