@@ -8,18 +8,18 @@ interface User {
   role_label?: string;
 }
 
-export interface LoginResponse {
+interface LoginResponse {
   token: string;
   user: User;
 }
 
-export interface Category {
+interface Category {
   id: number;
   name: string;
   description: string | null;
 }
 
-export interface Product {
+interface Product {
   id: number;
   category_id: number;
   name: string;
@@ -29,14 +29,14 @@ export interface Product {
   category?: Category;
 }
 
-export interface Meja {
+interface Meja {
   id: number;
   nomor_meja: number;
   status: "tersedia" | "dipakai" | "maintenance";
   keterangan: string;
 }
 
-export interface Transaksi {
+interface Transaksi {
   id: number;
   kode_transaksi: string;
   user_id: number;
@@ -54,7 +54,7 @@ export interface Transaksi {
   transaksi_items?: TransaksiItem[];
 }
 
-export interface TransaksiItem {
+interface TransaksiItem {
   id: number;
   transaksi_id: number;
   product_id: number;
@@ -62,6 +62,26 @@ export interface TransaksiItem {
   harga_satuan: string;
   subtotal: string;
   product?: Product;
+}
+
+interface AppConfig {
+  app_name: string;
+  version: string;
+  billiard: {
+    price_per_hour: number;
+    currency: string;
+    min_duration_hour: number;
+    max_duration_hour: number;
+  };
+  operating_hours: {
+    open: string;
+    close: string;
+    timezone: string;
+  };
+  payment: {
+    methods: string[];
+    qris_expiry_minutes: number;
+  };
 }
 
 export function getToken(): string | null {
@@ -100,64 +120,5 @@ export const login = (username: string, password: string) =>
     body: JSON.stringify({ username, password }),
   });
 
-// Categories
-export const getCategories = () => request<Category[]>("/categories");
-export const createCategory = (data: Partial<Category>) =>
-  request<Category>("/categories", { method: "POST", body: JSON.stringify(data) });
-export const updateCategory = (id: number, data: Partial<Category>) =>
-  request<Category>(`/categories/${id}`, { method: "PATCH", body: JSON.stringify(data) });
-export const deleteCategory = (id: number) =>
-  request<void>(`/categories/${id}`, { method: "DELETE" });
-
-// Products
-export const getProducts = () => request<Product[]>("/products");
-export const createProduct = (data: Partial<Product>) =>
-  request<Product>("/products", { method: "POST", body: JSON.stringify(data) });
-export const updateProduct = (id: number, data: Partial<Product>) =>
-  request<Product>(`/products/${id}`, { method: "PATCH", body: JSON.stringify(data) });
-export const deleteProduct = (id: number) =>
-  request<void>(`/products/${id}`, { method: "DELETE" });
-
-// Meja
-export const getMejas = () => request<Meja[]>("/mejas");
-export const updateMejaStatus = (id: number, status: string) =>
-  request<Meja>(`/mejas/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify({ status }),
-  });
-
-// Transaksi
-export const getTransaksis = () => request<Transaksi[]>("/transaksis");
-export const createTransaksi = (data: { meja_id?: number; tipe: string; nama_pelanggan?: string }) =>
-  request<Transaksi>("/transaksis", { method: "POST", body: JSON.stringify(data) });
-export const bayarTransaksi = (id: number) =>
-  request<Transaksi>(`/transaksis/${id}/bayar`, { method: "POST" });
-
-// Transaksi Items
-export const addItem = (transaksiId: number, data: { product_id: number; qty: number }) =>
-  request<TransaksiItem>(`/transaksis/${transaksiId}/items`, {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-
-// Cafe POS
-export const cafePos = (payment_method: "cash" | "qris", items: Record<string, number>) =>
-  request<Transaksi>("/transaksis/cafe_pos", {
-    method: "POST",
-    body: JSON.stringify({ payment_method, items }),
-  });
-
-// Reports
-export interface ReportData {
-  today_revenue: number;
-  monthly_revenue: number;
-  best_sellers: { name: string; quantity: number }[];
-  today_transactions: number;
-  monthly_transactions: number;
-}
-
-export const getReports = () =>
-  request<ReportData>("/reports");
-
-// Report
-export const getTransactionsReport = () => request("/transaksis/report");
+// Configs
+export const getAppConfig = () => request<AppConfig>("/configs");
