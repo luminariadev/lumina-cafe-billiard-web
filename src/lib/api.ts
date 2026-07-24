@@ -45,6 +45,12 @@ export interface Transaksi {
   total_bayar: string | null;
   status: "aktif" | "selesai" | "dibayar";
   nama_pelanggan: string | null;
+  customer_name?: string;
+    customer_phone?: string;
+    transaksi_type?: string;
+    total_amount?: number;
+    jam_mulai?: string;
+    jam_selesai?: string | null;
   payment_method?: "cash" | "qris";
   transaction_date?: string;
   total_price?: string;

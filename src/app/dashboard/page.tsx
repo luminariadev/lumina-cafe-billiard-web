@@ -114,7 +114,7 @@ export default function DashboardPage() {
                     <td colSpan={5} className="px-4 sm:px-6 py-10 sm:py-12 text-center text-gray-400">No recent transactions</td>
                   </tr>
                 ) : (
-                  recentTransaksis.map((tx: any) => (
+                  recentTransaksis.map((tx: Transaksi) => (
                     <tr key={tx.id} className="hover:bg-gray-800/50 transition-colors">
                       <td className="px-4 sm:px-6 py-3 sm:py-4 font-medium text-green-400 whitespace-nowrap">{tx.kode_transaksi}</td>
                       <td className="px-4 sm:px-6 py-3 sm:py-4 capitalize">{tx.tipe || tx.transaksi_type}</td>
@@ -161,7 +161,7 @@ export default function DashboardPage() {
             <div className="glass-card rounded-xl p-4 sm:p-6">
               <h4 className="text-base sm:text-lg font-semibold font-[Montserrat] text-gray-200 mb-3 sm:mb-4">Best Sellers</h4>
               <div className="space-y-3">
-                {report.best_sellers.map((item: any, idx: number) => (
+                {report.best_sellers.map((item: { name: string; quantity: number }, idx: number) => (
                   <div key={item.name} className="flex items-center gap-3 sm:gap-4 p-3 rounded-lg bg-gray-900 border border-gray-800">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0 ${
                       idx === 0 ? 'bg-amber-500/20 text-amber-500' : 'bg-gray-800 text-gray-400'
