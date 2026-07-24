@@ -1,6 +1,6 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1";
 
-interface User {
+export interface User {
   id: number;
   username: string;
   name: string;
@@ -13,13 +13,13 @@ interface LoginResponse {
   user: User;
 }
 
-interface Category {
+export interface Category {
   id: number;
   name: string;
   description: string | null;
 }
 
-interface Product {
+export interface Product {
   id: number;
   category_id: number;
   name: string;
@@ -29,14 +29,14 @@ interface Product {
   category?: Category;
 }
 
-interface Meja {
+export interface Meja {
   id: number;
   nomor_meja: number;
   status: "tersedia" | "dipakai" | "maintenance";
   keterangan: string;
 }
 
-interface Transaksi {
+export interface Transaksi {
   id: number;
   kode_transaksi: string;
   user_id: number;
@@ -54,7 +54,7 @@ interface Transaksi {
   transaksi_items?: TransaksiItem[];
 }
 
-interface TransaksiItem {
+export interface TransaksiItem {
   id: number;
   transaksi_id: number;
   product_id: number;
@@ -148,3 +148,60 @@ export interface GuestHistoryItem {
 
 export const getGuestHistory = (phone: string) =>
   request<GuestHistoryItem[]>(`/guest_transactions/history?phone=${encodeURIComponent(phone)}`);
+
+// ---- Missing exports needed by pages ----
+
+// Products
+export const getProducts = () => request<Product[]>("/products");
+export const createProduct = (data: Partial<Product>) =>
+  request<Product>("/products", { method: "POST", body: JSON.stringify(data) });
+export const updateProduct = (id: number, data: Partial<Product>) =>
+  request<Product>(`/products/${id}`, { method: "PUT", body: JSON.stringify(data) });
+export const deleteProduct = (id: number) =>
+  request<void>(`/products/${id}`, { method: "DELETE" });
+
+// Categories
+export const getCategories = () => request<Category[]>("/categories");
+export const createCategory = (data: Partial<Category>) =>
+  request<Category>("/categories", { method: "POST", body: JSON.stringify(data) });
+export const updateCategory = (id: number, data: Partial<Category>) =>
+  request<Category>(`/categories/${id}`, { method: "PUT", body: JSON.stringify(data) });
+export const deleteCategory = (id: number) =>
+  request<void>(`/categories/${id}`, { method: "DELETE" });
+
+// Meja
+export const getMejas = () => request<Meja[]>("/mejas");
+export const updateMejaStatus = (id: number, status: string) =>
+  request<Meja>(`/mejas/${id}`, { method: "PUT", body: JSON.stringify({ status }) });
+
+// Transaksis
+export const getTransaksis = () => request<Transaksi[]>("/transaksis");
+export const createTransaksi = (data: Partial<Transaksi>) =>
+  request<Transaksi>("/transaksis", { method: "POST", body: JSON.stringify(data) });
+export const getTransactionsReport = (from?: string, to?: string) => {
+  const params = new URLSearchParams();
+  if (from) params.set("from", from);
+  if (to) params.set("to", to);
+  const qs = params.toString() ? "?" + params.toString() : "";
+  return request<Transaksi[]>(`/transaksis/report${qs}`);
+};
+
+// Reports
+export interface ReportData {
+  today_revenue: number;
+  monthly_revenue: number;
+  best_sellers: { name: string; quantity: number }[];
+  today_transactions: number;
+  monthly_transactions: number;
+}
+export const getReports = (params?: { start_date?: string; end_date?: string }) => {
+  const qs = params ? "?" + new URLSearchParams(params as Record<string, string>).toString() : "";
+  return request<ReportData>(`/reports${qs}`);
+};
+
+// POS
+export const cafePos = (payment_method: string, items: Record<string, number>, customer_name?: string) =>
+  request<GuestHistoryItem>("/guest_transactions/cafe", {
+    method: "POST",
+    body: JSON.stringify({ customer_name, items, payment_method }),
+  });
