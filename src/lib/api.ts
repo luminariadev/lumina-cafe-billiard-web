@@ -122,3 +122,29 @@ export const login = (username: string, password: string) =>
 
 // Configs
 export const getAppConfig = () => request<AppConfig>("/configs");
+
+// Guest History
+export interface GuestHistoryItem {
+  id: number;
+  kode_transaksi: string;
+  customer_name: string;
+  customer_phone: string;
+  transaksi_type: string;
+  total_amount: number;
+  status: string;
+  payment_method: string;
+  jam_mulai: string;
+  jam_selesai: string | null;
+  created_at: string;
+  meja?: { nomor_meja: number };
+  transaksi_items?: {
+    id: number;
+    quantity: number;
+    price: number;
+    subtotal: number;
+    product?: { name: string };
+  }[];
+}
+
+export const getGuestHistory = (phone: string) =>
+  request<GuestHistoryItem[]>(`/guest_transactions/history?phone=${encodeURIComponent(phone)}`);
