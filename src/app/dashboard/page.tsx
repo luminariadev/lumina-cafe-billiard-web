@@ -114,7 +114,7 @@ export default function DashboardPage() {
                     <td colSpan={5} className="px-4 sm:px-6 py-10 sm:py-12 text-center text-gray-400">No recent transactions</td>
                   </tr>
                 ) : (
-                  recentTransaksis.map((tx: Transaksi) => (
+                  recentTransaksis.map((tx: any) => (
                     <tr key={tx.id} className="hover:bg-gray-800/50 transition-colors">
                       <td className="px-4 sm:px-6 py-3 sm:py-4 font-medium text-green-400 whitespace-nowrap">{tx.kode_transaksi}</td>
                       <td className="px-4 sm:px-6 py-3 sm:py-4 capitalize">{tx.tipe || tx.transaksi_type}</td>
