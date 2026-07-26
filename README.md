@@ -40,6 +40,16 @@ open http://localhost:3002
 
 ---
 
+## Fitur Utama
+
+- **Dashboard:** Ringkasan pendapatan harian, produk terlaris, dan statistik transaksi.
+- **Admin & Kasir POS:** Sistem Point-of-Sale untuk transaksi cafe, manajemen meja, dan produk.
+- **Manajemen Data:** CRUD untuk produk, kategori, dan meja billiard.
+- **Autentikasi:** Login berbasis JWT dengan role admin, kasir billiard, dan kasir cafe.
+- **Guest History:** Melihat riwayat transaksi guest berdasarkan nomor HP.
+
+---
+
 ## Fitur
 
 ### Per Role
