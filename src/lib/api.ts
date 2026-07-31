@@ -1,5 +1,6 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1";
 
+/** Authenticated user with role info */
 export interface User {
   id: number;
   username: string;
@@ -8,17 +9,20 @@ export interface User {
   role_label?: string;
 }
 
+/** Login response containing JWT token and user */
 interface LoginResponse {
   token: string;
   user: User;
 }
 
+/** Category for products */
 export interface Category {
   id: number;
   name: string;
   description: string | null;
 }
 
+/** Product/menu item */
 export interface Product {
   id: number;
   category_id: number;
@@ -29,6 +33,7 @@ export interface Product {
   category?: Category;
 }
 
+/** Table for billiard */
 export interface Meja {
   id: number;
   nomor_meja: number;
@@ -36,6 +41,7 @@ export interface Meja {
   keterangan: string;
 }
 
+/** Transaction (billiard booking or cafe order) */
 export interface Transaksi {
   id: number;
   kode_transaksi: string;
@@ -46,11 +52,11 @@ export interface Transaksi {
   status: "aktif" | "selesai" | "dibayar";
   nama_pelanggan: string | null;
   customer_name?: string;
-    customer_phone?: string;
-    transaksi_type?: string;
-    total_amount?: number;
-    jam_mulai?: string;
-    jam_selesai?: string | null;
+  customer_phone?: string;
+  transaksi_type?: string;
+  total_amount?: number;
+  jam_mulai?: string;
+  jam_selesai?: string | null;
   payment_method?: "cash" | "qris";
   transaction_date?: string;
   total_price?: string;
@@ -60,6 +66,7 @@ export interface Transaksi {
   transaksi_items?: TransaksiItem[];
 }
 
+/** Line item in a transaction */
 export interface TransaksiItem {
   id: number;
   transaksi_id: number;
@@ -70,6 +77,7 @@ export interface TransaksiItem {
   product?: Product;
 }
 
+/** App-wide configuration (pricing, hours, payment methods) */
 interface AppConfig {
   app_name: string;
   version: string;
@@ -88,6 +96,38 @@ interface AppConfig {
     methods: string[];
     qris_expiry_minutes: number;
   };
+}
+
+/** Guest transaction history item */
+export interface GuestHistoryItem {
+  id: number;
+  kode_transaksi: string;
+  customer_name: string;
+  customer_phone: string;
+  transaksi_type: string;
+  total_amount: number;
+  status: string;
+  payment_method: string;
+  jam_mulai: string;
+  jam_selesai: string | null;
+  created_at: string;
+  meja?: { nomor_meja: number };
+  transaksi_items?: {
+    id: number;
+    quantity: number;
+    price: number;
+    subtotal: number;
+    product?: { name: string };
+  }[];
+}
+
+/** Revenue and stats report data */
+export interface ReportData {
+  today_revenue: number;
+  monthly_revenue: number;
+  best_sellers: { name: string; quantity: number }[];
+  today_transactions: number;
+  monthly_transactions: number;
 }
 
 export function getToken(): string | null {
@@ -119,39 +159,17 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return res.json();
 }
 
-// Auth
+/** Login with username + password, returns JWT token */
 export const login = (username: string, password: string) =>
   request<LoginResponse>("/auth/login", {
     method: "POST",
     body: JSON.stringify({ username, password }),
   });
 
-// Configs
+/** Fetch app-wide config (pricing, hours, payment methods) */
 export const getAppConfig = () => request<AppConfig>("/configs");
 
-// Guest History
-export interface GuestHistoryItem {
-  id: number;
-  kode_transaksi: string;
-  customer_name: string;
-  customer_phone: string;
-  transaksi_type: string;
-  total_amount: number;
-  status: string;
-  payment_method: string;
-  jam_mulai: string;
-  jam_selesai: string | null;
-  created_at: string;
-  meja?: { nomor_meja: number };
-  transaksi_items?: {
-    id: number;
-    quantity: number;
-    price: number;
-    subtotal: number;
-    product?: { name: string };
-  }[];
-}
-
+/** Fetch guest transaction history by phone number */
 export const getGuestHistory = (phone: string) =>
   request<GuestHistoryItem[]>(`/guest_transactions/history?phone=${encodeURIComponent(phone)}`);
 
@@ -192,20 +210,13 @@ export const getTransactionsReport = (from?: string, to?: string) => {
   return request<Transaksi[]>(`/transaksis/report${qs}`);
 };
 
-// Reports
-export interface ReportData {
-  today_revenue: number;
-  monthly_revenue: number;
-  best_sellers: { name: string; quantity: number }[];
-  today_transactions: number;
-  monthly_transactions: number;
-}
+/** Fetch revenue report (optionally filtered by date range) */
 export const getReports = (params?: { start_date?: string; end_date?: string }) => {
   const qs = params ? "?" + new URLSearchParams(params as Record<string, string>).toString() : "";
   return request<ReportData>(`/reports${qs}`);
 };
 
-// POS
+/** POS: create a cafe order as a guest */
 export const cafePos = (payment_method: string, items: Record<string, number>, customer_name?: string) =>
   request<GuestHistoryItem>("/guest_transactions/cafe", {
     method: "POST",
